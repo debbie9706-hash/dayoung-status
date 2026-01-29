@@ -178,122 +178,99 @@
             font-size: 1.2em;
         }
 
-        /* 앱 설치 강력 유도 오버레이 */
-        .install-overlay {
+        /* 앱 설치 배너 */
+        .install-banner {
             display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(45, 52, 54, 0.95);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            background: #5B8A72;
+            border-radius: 14px;
+            padding: 18px;
+            margin-top: 16px;
+            text-align: center;
+            color: white;
         }
 
-        .install-overlay.show {
+        .install-banner.show {
+            display: block;
+        }
+
+        .install-banner-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 8px;
             display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
-        .install-modal {
+        .install-banner-text {
+            font-size: 0.95em;
+            margin-bottom: 12px;
+            line-height: 1.4;
+            opacity: 0.95;
+        }
+
+        .install-btn {
             background: white;
-            border-radius: 24px;
-            padding: 35px 28px;
-            max-width: 380px;
-            width: 100%;
+            color: #5B8A72;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .install-dismiss {
+            background: transparent;
+            color: white;
+            border: 1.5px solid rgba(255,255,255,0.5);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.95em;
+            cursor: pointer;
+            margin-left: 8px;
+        }
+
+        /* iOS 설치 안내 */
+        .ios-install-guide {
+            display: none;
+            background: #F8F9FA;
+            border-radius: 14px;
+            padding: 18px;
+            margin-top: 16px;
             text-align: center;
         }
 
-        .install-modal-emoji {
-            font-size: 4em;
-            margin-bottom: 16px;
+        .ios-install-guide.show {
+            display: block;
         }
 
-        .install-modal-title {
-            font-size: 1.4em;
-            font-weight: 700;
-            color: #2D3436;
-            margin-bottom: 12px;
-        }
-
-        .install-modal-desc {
-            font-size: 1.05em;
-            color: #636E72;
-            line-height: 1.6;
-            margin-bottom: 24px;
-        }
-
-        .install-modal-benefits {
-            background: #F8F9FA;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 24px;
-            text-align: left;
-        }
-
-        .install-modal-benefit {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 0;
-            font-size: 1em;
+        .ios-install-guide h3 {
+            font-size: 1.1em;
+            margin-bottom: 14px;
             color: #2D3436;
         }
 
-        .install-modal-benefit-icon {
-            font-size: 1.3em;
-        }
-
-        .install-modal-btn {
-            width: 100%;
-            padding: 16px;
-            border-radius: 12px;
-            font-size: 1.15em;
-            font-weight: 600;
-            cursor: pointer;
-            margin-bottom: 12px;
-            border: none;
-        }
-
-        .install-modal-btn.primary {
-            background: #5B8A72;
-            color: white;
-        }
-
-        .install-modal-btn.secondary {
-            background: transparent;
-            color: #636E72;
-            border: 2px solid #DFE6E9;
-        }
-
-        /* iOS 전용 설치 안내 */
-        .ios-install-steps {
-            background: #F8F9FA;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 24px;
-            text-align: left;
-        }
-
-        .ios-install-step {
+        .ios-step {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 10px 0;
-            border-bottom: 1px solid #E8E8E8;
+            padding: 10px;
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            text-align: left;
         }
 
-        .ios-install-step:last-child {
-            border-bottom: none;
-        }
-
-        .ios-install-step-num {
+        .ios-step-num {
             background: #5B8A72;
             color: white;
-            width: 28px;
-            height: 28px;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -303,18 +280,9 @@
             flex-shrink: 0;
         }
 
-        .ios-install-step-text {
+        .ios-step-text {
             font-size: 1em;
             color: #2D3436;
-        }
-
-        /* 앱 설치 배너 - 기존 거 숨김 */
-        .install-banner {
-            display: none !important;
-        }
-
-        .ios-install-guide {
-            display: none !important;
         }
 
         /* 관리자 모드 */
@@ -598,59 +566,38 @@
             </button>
         </div>
 
-        <!-- 앱 설치 유도 오버레이 -->
-        <div id="installOverlay" class="install-overlay">
-            <div class="install-modal">
-                <div class="install-modal-emoji">📱</div>
-                <div class="install-modal-title">앱으로 설치하면<br>더 편해요!</div>
-                <div class="install-modal-desc">
-                    홈 화면에서 바로 열 수 있어요
-                </div>
-                
-                <div class="install-modal-benefits">
-                    <div class="install-modal-benefit">
-                        <span class="install-modal-benefit-icon">⚡</span>
-                        <span>한 번 터치로 바로 열기</span>
-                    </div>
-                    <div class="install-modal-benefit">
-                        <span class="install-modal-benefit-icon">🔔</span>
-                        <span>더 빠른 로딩 속도</span>
-                    </div>
-                    <div class="install-modal-benefit">
-                        <span class="install-modal-benefit-icon">📌</span>
-                        <span>홈 화면에 아이콘 추가</span>
-                    </div>
-                </div>
-
-                <!-- Android/Desktop용 -->
-                <div id="androidInstallSection">
-                    <button id="installOverlayBtn" class="install-modal-btn primary">
-                        📲 앱 설치하기
-                    </button>
-                </div>
-
-                <!-- iOS용 -->
-                <div id="iosInstallSection" style="display:none;">
-                    <div class="ios-install-steps">
-                        <div class="ios-install-step">
-                            <div class="ios-install-step-num">1</div>
-                            <div class="ios-install-step-text">아래 공유 버튼 ⬆️ 누르기</div>
-                        </div>
-                        <div class="ios-install-step">
-                            <div class="ios-install-step-num">2</div>
-                            <div class="ios-install-step-text">"홈 화면에 추가" 선택</div>
-                        </div>
-                        <div class="ios-install-step">
-                            <div class="ios-install-step-num">3</div>
-                            <div class="ios-install-step-text">오른쪽 위 "추가" 누르기</div>
-                        </div>
-                    </div>
-                </div>
-
-                <button id="previewBtn" class="install-modal-btn secondary">
-                    👀 먼저 보기
-                </button>
+        <!-- 앱 설치 배너 (Android/Desktop) -->
+        <div id="installBanner" class="install-banner">
+            <div class="install-banner-title">
+                <span>📱</span>
+                <span>앱으로 설치하기</span>
             </div>
+            <div class="install-banner-text">
+                홈 화면에 추가하면 더 편하게 열 수 있어요
+            </div>
+            <button id="installBtn" class="install-btn">
+                <span>📲</span>
+                <span>설치</span>
+            </button>
+            <button id="installDismiss" class="install-dismiss">닫기</button>
+        </div>
+
+        <!-- iOS 설치 안내 -->
+        <div id="iosInstallGuide" class="ios-install-guide">
+            <h3>📱 앱으로 설치하기</h3>
+            <div class="ios-step">
+                <div class="ios-step-num">1</div>
+                <div class="ios-step-text">아래 공유 버튼 ⬆️ 누르기</div>
+            </div>
+            <div class="ios-step">
+                <div class="ios-step-num">2</div>
+                <div class="ios-step-text">"홈 화면에 추가" 선택</div>
+            </div>
+            <div class="ios-step">
+                <div class="ios-step-num">3</div>
+                <div class="ios-step-text">"추가" 누르기</div>
+            </div>
+            <button onclick="document.getElementById('iosInstallGuide').classList.remove('show')" style="margin-top:12px; padding:10px 20px; background:#5B8A72; color:white; border:none; border-radius:8px; font-size:1em; cursor:pointer;">확인</button>
         </div>
 
         <!-- 관리자 패널 (다영이 전용) -->
@@ -723,7 +670,7 @@
         const API_URL = 'https://dayoung-status.cjsghd8064.workers.dev';
         
         // 비밀번호 설정
-        const ADMIN_PASSWORD = 'dayoung123';
+        const ADMIN_PASSWORD = '242828';
 
         let isAdminMode = false;
         let selectedLocation = null;
@@ -745,55 +692,43 @@
 
         // 페이지 로드 시
         document.addEventListener('DOMContentLoaded', () => {
-            checkInstallStatus();
             fetchStatus();
             setupEventListeners();
+            checkInstallability();
             registerServiceWorker();
             
             // 1분마다 "~분 전" 업데이트
             setInterval(updateTimeAgo, 60000);
         });
 
-        // 앱 설치 상태 확인
-        // 앱 설치 상태 확인
-function checkInstallStatus() {
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches 
-        || window.navigator.standalone === true;
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    
-    // 이미 앱으로 설치되어 열린 경우 → 오버레이 안 보여줌
-    if (isStandalone) {
-        return;
-    }
-    
-    // 이전에 "먼저 보기"를 눌렀는지 확인 (세션 동안만 유지)
-    if (sessionStorage.getItem('previewMode')) {
-        return;
-    }
-
-    // 앱 미설치 + 브라우저로 접속 → 설치 유도 오버레이 표시
-    const overlay = document.getElementById('installOverlay');
-    overlay.classList.add('show');
-    
-    // iOS인 경우 iOS 안내 표시
-    if (isIOS) {
-        document.getElementById('androidInstallSection').style.display = 'none';
-        document.getElementById('iosInstallSection').style.display = 'block';
-    }
-}
-
-// 페이지 로드 전에 프롬프트 캡처 (최상단에서 실행)
-window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-});
-        }
-
         // "~분 전" 텍스트 업데이트
         function updateTimeAgo() {
             if (lastUpdateTimestamp) {
                 document.getElementById('lastUpdateAgo').textContent = formatTimeAgo(lastUpdateTimestamp);
             }
+        }
+
+        // PWA 설치 가능 여부 확인
+        function checkInstallability() {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+            
+            if (isIOS && !isStandalone) {
+                setTimeout(() => {
+                    if (!localStorage.getItem('iosInstallDismissed')) {
+                        document.getElementById('iosInstallGuide').classList.add('show');
+                    }
+                }, 3000);
+            }
+
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                
+                if (!localStorage.getItem('installDismissed')) {
+                    document.getElementById('installBanner').classList.add('show');
+                }
+            });
         }
 
         // 서비스 워커 등록
@@ -806,28 +741,6 @@ window.addEventListener('beforeinstallprompt', (e) => {
         }
 
         function setupEventListeners() {
-            // 오버레이 설치 버튼
-            document.getElementById('installOverlayBtn').addEventListener('click', async () => {
-                if (deferredPrompt) {
-                    deferredPrompt.prompt();
-                    const { outcome } = await deferredPrompt.userChoice;
-                    if (outcome === 'accepted') {
-                        document.getElementById('installOverlay').classList.remove('show');
-                        showToast('🎉 설치 완료!');
-                    }
-                    deferredPrompt = null;
-                } else {
-                    // 프롬프트가 없는 경우 (이미 설치됨 또는 지원 안 함)
-                    showToast('브라우저 메뉴에서 "홈 화면에 추가"를 선택해주세요');
-                }
-            });
-
-            // 먼저 보기 버튼
-            document.getElementById('previewBtn').addEventListener('click', () => {
-                document.getElementById('installOverlay').classList.remove('show');
-                sessionStorage.setItem('previewMode', 'true');
-            });
-
             // 새로고침 버튼
             document.getElementById('refreshBtn').addEventListener('click', () => {
                 document.getElementById('refreshBtn').innerHTML = 
@@ -837,6 +750,25 @@ window.addEventListener('beforeinstallprompt', (e) => {
                         '<span class="btn-icon">🔄</span><span>다시 확인하기</span>';
                     showToast('✅ 업데이트 완료!');
                 });
+            });
+
+            // 앱 설치 버튼
+            document.getElementById('installBtn').addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    if (outcome === 'accepted') {
+                        showToast('🎉 설치 완료!');
+                    }
+                    deferredPrompt = null;
+                    document.getElementById('installBanner').classList.remove('show');
+                }
+            });
+
+            // 설치 배너 닫기
+            document.getElementById('installDismiss').addEventListener('click', () => {
+                document.getElementById('installBanner').classList.remove('show');
+                localStorage.setItem('installDismissed', 'true');
             });
 
             // 옵션 버튼 클릭
