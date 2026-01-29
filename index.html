@@ -105,6 +105,11 @@
             border: 2px solid #81C784;
         }
 
+        .status-card.location-at_home {
+            background: #E0F7FA;
+            border: 2px solid #4DD0E1;
+        }
+
         .status-card.location-outside {
             background: #FFF8E1;
             border: 2px solid #FFD54F;
@@ -145,6 +150,100 @@
             font-weight: 700;
             line-height: 1.4;
             word-break: keep-all;
+        }
+
+        /* 아버지 메시지 섹션 */
+        .dad-section {
+            background: linear-gradient(135deg, #FFEAA7 0%, #FDCB6E 100%);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .dad-section-title {
+            font-size: 1.1em;
+            font-weight: 700;
+            color: #2D3436;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dad-message-display {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            min-height: 60px;
+        }
+
+        .dad-message-text {
+            font-size: 1.1em;
+            color: #2D3436;
+            line-height: 1.5;
+            word-break: keep-all;
+        }
+
+        .dad-message-time {
+            font-size: 0.85em;
+            color: #636E72;
+            margin-top: 8px;
+        }
+
+        .dad-message-empty {
+            color: #B2BEC3;
+            font-style: italic;
+        }
+
+        .dad-input-area {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .dad-input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid rgba(255,255,255,0.5);
+            border-radius: 12px;
+            font-size: 1em;
+            resize: none;
+            min-height: 80px;
+            font-family: inherit;
+        }
+
+        .dad-input:focus {
+            outline: none;
+            border-color: white;
+        }
+
+        .dad-input::placeholder {
+            color: #B2BEC3;
+        }
+
+        .dad-send-btn {
+            padding: 14px 20px;
+            background: #2D3436;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.05em;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .dad-send-btn:hover {
+            background: #1A1A1A;
+        }
+
+        .dad-send-btn:active {
+            transform: scale(0.98);
         }
 
         /* 새로고침 버튼 */
@@ -373,6 +472,37 @@
             background: #4A7A62;
         }
 
+        /* 아버지 메시지 표시 (관리자용) */
+        .admin-dad-message {
+            background: #FFF8E1;
+            border: 2px solid #FFD54F;
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 20px;
+        }
+
+        .admin-dad-message-title {
+            font-weight: 600;
+            color: #F39C12;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .admin-dad-message-content {
+            background: white;
+            border-radius: 10px;
+            padding: 14px;
+            font-size: 1.05em;
+            line-height: 1.5;
+        }
+
+        .admin-dad-message-empty {
+            color: #B2BEC3;
+            font-style: italic;
+        }
+
         /* 모드 전환 버튼 */
         .mode-toggle {
             position: fixed;
@@ -559,6 +689,27 @@
                 <div id="hungerText" class="status-text">오늘은 배가 안 고파요</div>
             </div>
 
+            <!-- 아버지 메시지 섹션 (비밀번호 없이 사용 가능) -->
+            <div class="dad-section">
+                <div class="dad-section-title">
+                    <span>👨‍👧</span>
+                    <span>아버지 → 다영</span>
+                </div>
+                <div class="dad-message-display">
+                    <div id="dadMessageText" class="dad-message-text dad-message-empty">
+                        아직 메시지가 없어요
+                    </div>
+                    <div id="dadMessageTime" class="dad-message-time" style="display: none;"></div>
+                </div>
+                <div class="dad-input-area">
+                    <textarea id="dadInput" class="dad-input" placeholder="오늘 저녁 메뉴나 하고 싶은 말을 적어주세요... 예) 오늘 저녁은 된장찌개야~"></textarea>
+                    <button id="dadSendBtn" class="dad-send-btn">
+                        <span>✉️</span>
+                        <span>메시지 보내기</span>
+                    </button>
+                </div>
+            </div>
+
             <!-- 새로고침 버튼 -->
             <button id="refreshBtn" class="refresh-btn">
                 <span class="btn-icon">🔄</span>
@@ -604,12 +755,27 @@
         <div id="adminPanel" class="admin-panel">
             <h2 class="admin-title">✏️ 상태 변경</h2>
             
+            <!-- 아버지 메시지 표시 -->
+            <div class="admin-dad-message">
+                <div class="admin-dad-message-title">
+                    <span>💌</span>
+                    <span>아버지가 보낸 메시지</span>
+                </div>
+                <div id="adminDadMessage" class="admin-dad-message-content admin-dad-message-empty">
+                    아직 메시지가 없어요
+                </div>
+            </div>
+            
             <div class="option-group">
                 <label class="option-label">📍 지금은</label>
                 <div class="option-buttons">
                     <button class="option-btn" data-type="location" data-value="going_home">
-                        <span class="btn-emoji">🏠</span>
+                        <span class="btn-emoji">🚶</span>
                         <span>집에 가고 있어요</span>
+                    </button>
+                    <button class="option-btn" data-type="location" data-value="at_home">
+                        <span class="btn-emoji">🏠</span>
+                        <span>집에 도착했어요!</span>
                     </button>
                     <button class="option-btn" data-type="location" data-value="outside">
                         <span class="btn-emoji">🌙</span>
@@ -678,9 +844,10 @@
         let deferredPrompt = null;
         let lastUpdateTimestamp = null;
 
-        // 상태 매핑
+        // 상태 매핑 (집도착 추가)
         const locationMap = {
-            'going_home': { emoji: '🏠', text: '집에 가고 있어요' },
+            'going_home': { emoji: '🚶', text: '집에 가고 있어요' },
+            'at_home': { emoji: '🏠', text: '집에 도착했어요!' },
             'outside': { emoji: '🌙', text: '아직 밖에 있어요' },
             'busy': { emoji: '💼', text: '지금 바빠요' }
         };
@@ -752,6 +919,9 @@
                 });
             });
 
+            // 아버지 메시지 전송 버튼
+            document.getElementById('dadSendBtn').addEventListener('click', sendDadMessage);
+
             // 앱 설치 버튼
             document.getElementById('installBtn').addEventListener('click', async () => {
                 if (deferredPrompt) {
@@ -814,6 +984,35 @@
             });
         }
 
+        // 아버지 메시지 전송
+        async function sendDadMessage() {
+            const input = document.getElementById('dadInput');
+            const message = input.value.trim();
+            
+            if (!message) {
+                showToast('메시지를 입력해주세요');
+                return;
+            }
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ dadMessage: message })
+                });
+
+                const data = await response.json();
+                updateDisplay(data);
+                input.value = '';
+                showToast('✅ 메시지 전송 완료!');
+            } catch (error) {
+                console.error('메시지 전송 실패:', error);
+                showToast('❌ 전송 실패. 다시 시도해주세요.');
+            }
+        }
+
         async function fetchStatus() {
             try {
                 const response = await fetch(API_URL);
@@ -860,6 +1059,33 @@
             document.getElementById('hungerEmoji').textContent = hunger.emoji;
             document.getElementById('hungerText').textContent = hunger.text;
             document.getElementById('hungerCard').className = 'status-card hunger-' + (data.hunger || 'not_hungry');
+
+            // 아버지 메시지 표시
+            const dadMessageText = document.getElementById('dadMessageText');
+            const dadMessageTime = document.getElementById('dadMessageTime');
+            const adminDadMessage = document.getElementById('adminDadMessage');
+            
+            if (data.dadMessage && data.dadMessage.trim()) {
+                dadMessageText.textContent = data.dadMessage;
+                dadMessageText.classList.remove('dad-message-empty');
+                
+                if (data.dadMessageUpdated) {
+                    const msgTime = new Date(data.dadMessageUpdated);
+                    dadMessageTime.textContent = formatTime(msgTime) + ' · ' + formatTimeAgo(msgTime);
+                    dadMessageTime.style.display = 'block';
+                }
+                
+                // 관리자 패널에도 표시
+                adminDadMessage.textContent = data.dadMessage;
+                adminDadMessage.classList.remove('admin-dad-message-empty');
+            } else {
+                dadMessageText.textContent = '아직 메시지가 없어요';
+                dadMessageText.classList.add('dad-message-empty');
+                dadMessageTime.style.display = 'none';
+                
+                adminDadMessage.textContent = '아직 메시지가 없어요';
+                adminDadMessage.classList.add('admin-dad-message-empty');
+            }
 
             // 관리자 모드에서 현재 상태 선택 표시
             if (isAdminMode) {
