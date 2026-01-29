@@ -755,36 +755,38 @@
         });
 
         // 앱 설치 상태 확인
-        function checkInstallStatus() {
-            const isStandalone = window.matchMedia('(display-mode: standalone)').matches 
-                || window.navigator.standalone === true;
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-            
-            // 이미 앱으로 설치되어 열린 경우 → 오버레이 안 보여줌
-            if (isStandalone) {
-                return;
-            }
-            
-            // 이전에 "먼저 보기"를 눌렀는지 확인 (세션 동안만 유지)
-            if (sessionStorage.getItem('previewMode')) {
-                return;
-            }
+        // 앱 설치 상태 확인
+function checkInstallStatus() {
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches 
+        || window.navigator.standalone === true;
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    
+    // 이미 앱으로 설치되어 열린 경우 → 오버레이 안 보여줌
+    if (isStandalone) {
+        return;
+    }
+    
+    // 이전에 "먼저 보기"를 눌렀는지 확인 (세션 동안만 유지)
+    if (sessionStorage.getItem('previewMode')) {
+        return;
+    }
 
-            // 앱 미설치 + 브라우저로 접속 → 설치 유도 오버레이 표시
-            const overlay = document.getElementById('installOverlay');
-            overlay.classList.add('show');
-            
-            // iOS인 경우 iOS 안내 표시
-            if (isIOS) {
-                document.getElementById('androidInstallSection').style.display = 'none';
-                document.getElementById('iosInstallSection').style.display = 'block';
-            }
+    // 앱 미설치 + 브라우저로 접속 → 설치 유도 오버레이 표시
+    const overlay = document.getElementById('installOverlay');
+    overlay.classList.add('show');
+    
+    // iOS인 경우 iOS 안내 표시
+    if (isIOS) {
+        document.getElementById('androidInstallSection').style.display = 'none';
+        document.getElementById('iosInstallSection').style.display = 'block';
+    }
+}
 
-            // Android/Desktop PWA 설치 프롬프트 캡처
-            window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                deferredPrompt = e;
-            });
+// 페이지 로드 전에 프롬프트 캡처 (최상단에서 실행)
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+});
         }
 
         // "~분 전" 텍스트 업데이트
