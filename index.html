@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>다영이 상태 알림</title>
+    
+    <!-- PWA 설정 -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#5B8A72">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="다영이 상태">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Malgun Gothic', '맑은 고딕', sans-serif;
+            background: #F5F1EB;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 28px;
+            padding: 28px 24px;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        /* 헤더 영역 */
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .header-emoji {
+            font-size: 3em;
+            margin-bottom: 8px;
+        }
+
+        h1 {
+            color: #2D3436;
+            font-size: 1.5em;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .subtitle {
+            color: #636E72;
+            font-size: 1em;
+            line-height: 1.5;
+        }
+
+        /* 마지막 업데이트 시각 - 눈에 띄게 */
+        .last-update-banner {
+            background: linear-gradient(135deg, #74B9FF 0%, #0984E3 100%);
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            color: white;
+            text-align: center;
+        }
+
+        .last-update-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 4px;
+        }
+
+        .last-update-time {
+            font-size: 1.4em;
+            font-weight: 700;
+        }
+
+        .last-update-ago {
+            font-size: 0.95em;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+
+        /* 상태 카드 - 단순하고 명확하게 */
+        .status-card {
+            border-radius: 20px;
+            padding: 28px 24px;
+            margin-bottom: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        /* 위치 상태 색상 - 부드러운 톤 */
+        .status-card.location-going_home {
+            background: #E8F5E9;
+            border: 2px solid #81C784;
+        }
+
+        .status-card.location-outside {
+            background: #FFF8E1;
+            border: 2px solid #FFD54F;
+        }
+
+        .status-card.location-busy {
+            background: #FFEBEE;
+            border: 2px solid #E57373;
+        }
+
+        /* 배고픔 상태 색상 */
+        .status-card.hunger-hungry {
+            background: #FCE4EC;
+            border: 2px solid #F06292;
+        }
+
+        .status-card.hunger-not_hungry {
+            background: #E3F2FD;
+            border: 2px solid #64B5F6;
+        }
+
+        .status-label {
+            font-size: 0.95em;
+            color: #636E72;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+
+        .status-emoji {
+            font-size: 4.5em;
+            margin-bottom: 12px;
+            line-height: 1;
+        }
+
+        .status-text {
+            font-size: 1.4em;
+            color: #2D3436;
+            font-weight: 700;
+            line-height: 1.4;
+            word-break: keep-all;
+        }
+
+        /* 새로고침 버튼 */
+        .refresh-btn {
+            width: 100%;
+            padding: 18px;
+            background: #5B8A72;
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .refresh-btn:hover {
+            background: #4A7A62;
+        }
+
+        .refresh-btn:active {
+            transform: scale(0.98);
+        }
+
+        .refresh-btn .btn-icon {
+            font-size: 1.2em;
+        }
+
+        /* 앱 설치 배너 */
+        .install-banner {
+            display: none;
+            background: #5B8A72;
+            border-radius: 14px;
+            padding: 18px;
+            margin-top: 16px;
+            text-align: center;
+            color: white;
+        }
+
+        .install-banner.show {
+            display: block;
+        }
+
+        .install-banner-title {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .install-banner-text {
+            font-size: 0.95em;
+            margin-bottom: 12px;
+            line-height: 1.4;
+            opacity: 0.95;
+        }
+
+        .install-btn {
+            background: white;
+            color: #5B8A72;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .install-dismiss {
+            background: transparent;
+            color: white;
+            border: 1.5px solid rgba(255,255,255,0.5);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.95em;
+            cursor: pointer;
+            margin-left: 8px;
+        }
+
+        /* iOS 설치 안내 */
+        .ios-install-guide {
+            display: none;
+            background: #F8F9FA;
+            border-radius: 14px;
+            padding: 18px;
+            margin-top: 16px;
+            text-align: center;
+        }
+
+        .ios-install-guide.show {
+            display: block;
+        }
+
+        .ios-install-guide h3 {
+            font-size: 1.1em;
+            margin-bottom: 14px;
+            color: #2D3436;
+        }
+
+        .ios-step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            background: white;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            text-align: left;
+        }
+
+        .ios-step-num {
+            background: #5B8A72;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9em;
+            flex-shrink: 0;
+        }
+
+        .ios-step-text {
+            font-size: 1em;
+            color: #2D3436;
+        }
+
+        /* 관리자 모드 */
+        .admin-panel {
+            display: none;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 2px dashed #DFE6E9;
+        }
+
+        .admin-panel.active {
+            display: block;
+        }
+
+        .admin-title {
+            text-align: center;
+            color: #5B8A72;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .option-group {
+            margin-bottom: 20px;
+        }
+
+        .option-label {
+            font-weight: 600;
+            color: #636E72;
+            margin-bottom: 10px;
+            display: block;
+            font-size: 1em;
+        }
+
+        .option-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-btn {
+            padding: 16px 18px;
+            border: 2px solid #DFE6E9;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            font-size: 1.05em;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .option-btn:hover {
+            border-color: #5B8A72;
+            background: #F0F7F4;
+        }
+
+        .option-btn.selected {
+            border-color: #5B8A72;
+            background: #5B8A72;
+            color: white;
+        }
+
+        .option-btn .btn-emoji {
+            font-size: 1.6em;
+        }
+
+        .save-btn {
+            width: 100%;
+            padding: 18px;
+            background: #5B8A72;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.15em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .save-btn:hover {
+            background: #4A7A62;
+        }
+
+        /* 모드 전환 버튼 */
+        .mode-toggle {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            cursor: pointer;
+            font-size: 1.1em;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            opacity: 0.5;
+            transition: opacity 0.3s;
+        }
+
+        .mode-toggle:hover {
+            opacity: 1;
+        }
+
+        /* 토스트 알림 */
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: #2D3436;
+            color: white;
+            padding: 16px 28px;
+            border-radius: 12px;
+            font-size: 1.05em;
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            text-align: center;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* 로딩 */
+        .loading {
+            text-align: center;
+            color: #636E72;
+            padding: 50px 20px;
+        }
+
+        .loading-spinner {
+            width: 45px;
+            height: 45px;
+            border: 4px solid #E8E8E8;
+            border-top: 4px solid #5B8A72;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 18px;
+        }
+
+        .loading-text {
+            font-size: 1.1em;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 비밀번호 모달 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            padding: 28px;
+            border-radius: 20px;
+            max-width: 320px;
+            width: 90%;
+        }
+
+        .modal h3 {
+            margin-bottom: 18px;
+            color: #2D3436;
+            font-size: 1.2em;
+            text-align: center;
+        }
+
+        .modal input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #DFE6E9;
+            border-radius: 10px;
+            font-size: 1.05em;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .modal input:focus {
+            outline: none;
+            border-color: #5B8A72;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.05em;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .modal-btn.confirm {
+            background: #5B8A72;
+            color: white;
+        }
+
+        .modal-btn.cancel {
+            background: #DFE6E9;
+            color: #636E72;
+        }
+
+        /* 푸터 */
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid #E8E8E8;
+            color: #B2BEC3;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-emoji">💕</div>
+            <h1>다영이 상태</h1>
+            <p class="subtitle">아버지, 편하게 확인하세요</p>
+        </div>
+
+        <div id="loading" class="loading">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">불러오는 중...</div>
+        </div>
+
+        <div id="statusView" style="display: none;">
+            <!-- 마지막 업데이트 시각 배너 -->
+            <div class="last-update-banner">
+                <div class="last-update-label">마지막으로 알려준 시각</div>
+                <div id="lastUpdateTime" class="last-update-time">--:--</div>
+                <div id="lastUpdateAgo" class="last-update-ago"></div>
+            </div>
+
+            <!-- 현재 상태 -->
+            <div id="locationCard" class="status-card location-going_home">
+                <div class="status-label">📍 지금은</div>
+                <div id="locationEmoji" class="status-emoji">🏠</div>
+                <div id="locationText" class="status-text">집에 가고 있어요</div>
+            </div>
+
+            <!-- 배고픔 상태 -->
+            <div id="hungerCard" class="status-card hunger-not_hungry">
+                <div class="status-label">🍚 밥은</div>
+                <div id="hungerEmoji" class="status-emoji">😊</div>
+                <div id="hungerText" class="status-text">오늘은 배가 안 고파요</div>
+            </div>
+
+            <!-- 새로고침 버튼 -->
+            <button id="refreshBtn" class="refresh-btn">
+                <span class="btn-icon">🔄</span>
+                <span>다시 확인하기</span>
+            </button>
+        </div>
+
+        <!-- 앱 설치 배너 (Android/Desktop) -->
+        <div id="installBanner" class="install-banner">
+            <div class="install-banner-title">
+                <span>📱</span>
+                <span>앱으로 설치하기</span>
+            </div>
+            <div class="install-banner-text">
+                홈 화면에 추가하면 더 편하게 열 수 있어요
+            </div>
+            <button id="installBtn" class="install-btn">
+                <span>📲</span>
+                <span>설치</span>
+            </button>
+            <button id="installDismiss" class="install-dismiss">닫기</button>
+        </div>
+
+        <!-- iOS 설치 안내 -->
+        <div id="iosInstallGuide" class="ios-install-guide">
+            <h3>📱 앱으로 설치하기</h3>
+            <div class="ios-step">
+                <div class="ios-step-num">1</div>
+                <div class="ios-step-text">아래 공유 버튼 ⬆️ 누르기</div>
+            </div>
+            <div class="ios-step">
+                <div class="ios-step-num">2</div>
+                <div class="ios-step-text">"홈 화면에 추가" 선택</div>
+            </div>
+            <div class="ios-step">
+                <div class="ios-step-num">3</div>
+                <div class="ios-step-text">"추가" 누르기</div>
+            </div>
+            <button onclick="document.getElementById('iosInstallGuide').classList.remove('show')" style="margin-top:12px; padding:10px 20px; background:#5B8A72; color:white; border:none; border-radius:8px; font-size:1em; cursor:pointer;">확인</button>
+        </div>
+
+        <!-- 관리자 패널 (다영이 전용) -->
+        <div id="adminPanel" class="admin-panel">
+            <h2 class="admin-title">✏️ 상태 변경</h2>
+            
+            <div class="option-group">
+                <label class="option-label">📍 지금은</label>
+                <div class="option-buttons">
+                    <button class="option-btn" data-type="location" data-value="going_home">
+                        <span class="btn-emoji">🏠</span>
+                        <span>집에 가고 있어요</span>
+                    </button>
+                    <button class="option-btn" data-type="location" data-value="outside">
+                        <span class="btn-emoji">🌙</span>
+                        <span>아직 밖에 있어요</span>
+                    </button>
+                    <button class="option-btn" data-type="location" data-value="busy">
+                        <span class="btn-emoji">💼</span>
+                        <span>지금 바빠요</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="option-group">
+                <label class="option-label">🍚 밥은</label>
+                <div class="option-buttons">
+                    <button class="option-btn" data-type="hunger" data-value="not_hungry">
+                        <span class="btn-emoji">😊</span>
+                        <span>배 안 고파요, 먼저 주무세요</span>
+                    </button>
+                    <button class="option-btn" data-type="hunger" data-value="hungry">
+                        <span class="btn-emoji">🍽️</span>
+                        <span>배고파요, 밥 주세요!</span>
+                    </button>
+                </div>
+            </div>
+
+            <button id="saveBtn" class="save-btn">
+                <span>💾</span>
+                <span>저장하기</span>
+            </button>
+        </div>
+
+        <div class="footer">
+            💕 다영
+        </div>
+    </div>
+
+    <!-- 모드 전환 버튼 -->
+    <button id="modeToggle" class="mode-toggle">⚙️</button>
+
+    <!-- 비밀번호 모달 -->
+    <div id="passwordModal" class="modal-overlay">
+        <div class="modal">
+            <h3>🔐 비밀번호</h3>
+            <input type="password" id="passwordInput" placeholder="비밀번호 입력">
+            <div class="modal-buttons">
+                <button class="modal-btn cancel" onclick="closeModal()">취소</button>
+                <button class="modal-btn confirm" onclick="checkPassword()">확인</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 토스트 알림 -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // ⚠️ 여기에 Cloudflare Worker URL을 입력하세요!
+        const API_URL = 'https://dayoung-status.cjsghd8064.workers.dev';
+        
+        // 비밀번호 설정
+        const ADMIN_PASSWORD = '242828';
+
+        let isAdminMode = false;
+        let selectedLocation = null;
+        let selectedHunger = null;
+        let deferredPrompt = null;
+        let lastUpdateTimestamp = null;
+
+        // 상태 매핑
+        const locationMap = {
+            'going_home': { emoji: '🏠', text: '집에 가고 있어요' },
+            'outside': { emoji: '🌙', text: '아직 밖에 있어요' },
+            'busy': { emoji: '💼', text: '지금 바빠요' }
+        };
+
+        const hungerMap = {
+            'not_hungry': { emoji: '😊', text: '배 안 고파요, 먼저 주무세요' },
+            'hungry': { emoji: '🍽️', text: '배고파요, 밥 주세요!' }
+        };
+
+        // 페이지 로드 시
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchStatus();
+            setupEventListeners();
+            checkInstallability();
+            registerServiceWorker();
+            
+            // 1분마다 "~분 전" 업데이트
+            setInterval(updateTimeAgo, 60000);
+        });
+
+        // "~분 전" 텍스트 업데이트
+        function updateTimeAgo() {
+            if (lastUpdateTimestamp) {
+                document.getElementById('lastUpdateAgo').textContent = formatTimeAgo(lastUpdateTimestamp);
+            }
+        }
+
+        // PWA 설치 가능 여부 확인
+        function checkInstallability() {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+            
+            if (isIOS && !isStandalone) {
+                setTimeout(() => {
+                    if (!localStorage.getItem('iosInstallDismissed')) {
+                        document.getElementById('iosInstallGuide').classList.add('show');
+                    }
+                }, 3000);
+            }
+
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                
+                if (!localStorage.getItem('installDismissed')) {
+                    document.getElementById('installBanner').classList.add('show');
+                }
+            });
+        }
+
+        // 서비스 워커 등록
+        function registerServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('Service Worker 등록 성공'))
+                    .catch(err => console.log('Service Worker 등록 실패:', err));
+            }
+        }
+
+        function setupEventListeners() {
+            // 새로고침 버튼
+            document.getElementById('refreshBtn').addEventListener('click', () => {
+                document.getElementById('refreshBtn').innerHTML = 
+                    '<span class="btn-icon">⏳</span><span>확인 중...</span>';
+                fetchStatus().then(() => {
+                    document.getElementById('refreshBtn').innerHTML = 
+                        '<span class="btn-icon">🔄</span><span>다시 확인하기</span>';
+                    showToast('✅ 업데이트 완료!');
+                });
+            });
+
+            // 앱 설치 버튼
+            document.getElementById('installBtn').addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    if (outcome === 'accepted') {
+                        showToast('🎉 설치 완료!');
+                    }
+                    deferredPrompt = null;
+                    document.getElementById('installBanner').classList.remove('show');
+                }
+            });
+
+            // 설치 배너 닫기
+            document.getElementById('installDismiss').addEventListener('click', () => {
+                document.getElementById('installBanner').classList.remove('show');
+                localStorage.setItem('installDismissed', 'true');
+            });
+
+            // 옵션 버튼 클릭
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const type = btn.dataset.type;
+                    const value = btn.dataset.value;
+                    
+                    document.querySelectorAll(`.option-btn[data-type="${type}"]`).forEach(b => {
+                        b.classList.remove('selected');
+                    });
+                    
+                    btn.classList.add('selected');
+                    
+                    if (type === 'location') {
+                        selectedLocation = value;
+                    } else if (type === 'hunger') {
+                        selectedHunger = value;
+                    }
+                });
+            });
+
+            // 저장 버튼
+            document.getElementById('saveBtn').addEventListener('click', saveStatus);
+
+            // 모드 전환 버튼
+            document.getElementById('modeToggle').addEventListener('click', () => {
+                if (!isAdminMode) {
+                    document.getElementById('passwordModal').classList.add('active');
+                    document.getElementById('passwordInput').focus();
+                } else {
+                    isAdminMode = false;
+                    document.getElementById('adminPanel').classList.remove('active');
+                    showToast('🔒 관리자 모드 종료');
+                }
+            });
+
+            // 비밀번호 입력 엔터키
+            document.getElementById('passwordInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    checkPassword();
+                }
+            });
+        }
+
+        async function fetchStatus() {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('statusView').style.display = 'block';
+                
+                updateDisplay(data);
+                return data;
+            } catch (error) {
+                console.error('상태 가져오기 실패:', error);
+                document.getElementById('loading').innerHTML = 
+                    '<div style="font-size:3em; margin-bottom:15px;">😢</div>' +
+                    '<div class="loading-text">연결할 수 없어요</div>' +
+                    '<div style="margin-top:10px; color:#999; font-size:0.95em;">잠시 후 다시 시도해주세요</div>';
+            }
+        }
+
+        function updateDisplay(data) {
+            // 마지막 업데이트 시각 (더 최근 것 사용)
+            const locationTime = data.locationUpdated ? new Date(data.locationUpdated) : null;
+            const hungerTime = data.hungerUpdated ? new Date(data.hungerUpdated) : null;
+            
+            let latestTime = locationTime;
+            if (hungerTime && (!latestTime || hungerTime > latestTime)) {
+                latestTime = hungerTime;
+            }
+            
+            if (latestTime) {
+                lastUpdateTimestamp = latestTime;
+                document.getElementById('lastUpdateTime').textContent = formatTime(latestTime);
+                document.getElementById('lastUpdateAgo').textContent = formatTimeAgo(latestTime);
+            }
+
+            // 위치 상태
+            const location = locationMap[data.location] || locationMap['going_home'];
+            document.getElementById('locationEmoji').textContent = location.emoji;
+            document.getElementById('locationText').textContent = location.text;
+            document.getElementById('locationCard').className = 'status-card location-' + (data.location || 'going_home');
+
+            // 배고픔 상태
+            const hunger = hungerMap[data.hunger] || hungerMap['not_hungry'];
+            document.getElementById('hungerEmoji').textContent = hunger.emoji;
+            document.getElementById('hungerText').textContent = hunger.text;
+            document.getElementById('hungerCard').className = 'status-card hunger-' + (data.hunger || 'not_hungry');
+
+            // 관리자 모드에서 현재 상태 선택 표시
+            if (isAdminMode) {
+                selectCurrentStatus(data.location, data.hunger);
+            }
+        }
+
+        function selectCurrentStatus(location, hunger) {
+            document.querySelectorAll('.option-btn[data-type="location"]').forEach(btn => {
+                btn.classList.toggle('selected', btn.dataset.value === location);
+            });
+            selectedLocation = location;
+
+            document.querySelectorAll('.option-btn[data-type="hunger"]').forEach(btn => {
+                btn.classList.toggle('selected', btn.dataset.value === hunger);
+            });
+            selectedHunger = hunger;
+        }
+
+        async function saveStatus() {
+            if (!selectedLocation && !selectedHunger) {
+                showToast('상태를 선택해주세요');
+                return;
+            }
+
+            try {
+                const body = {};
+                if (selectedLocation) body.location = selectedLocation;
+                if (selectedHunger) body.hunger = selectedHunger;
+
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(body)
+                });
+
+                const data = await response.json();
+                updateDisplay(data);
+                showToast('✅ 저장 완료!');
+            } catch (error) {
+                console.error('저장 실패:', error);
+                showToast('❌ 저장 실패. 다시 시도해주세요.');
+            }
+        }
+
+        // 시각 포맷 (오후 3:45)
+        function formatTime(date) {
+            return date.toLocaleTimeString('ko-KR', {
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true
+            });
+        }
+
+        // ~분 전 포맷
+        function formatTimeAgo(date) {
+            const now = new Date();
+            const diff = now - date;
+            
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+            
+            if (minutes < 1) return '방금 전';
+            if (minutes < 60) return minutes + '분 전';
+            if (hours < 24) return hours + '시간 전';
+            if (days === 1) return '어제';
+            return days + '일 전';
+        }
+
+        function checkPassword() {
+            const input = document.getElementById('passwordInput');
+            if (input.value === ADMIN_PASSWORD) {
+                isAdminMode = true;
+                document.getElementById('adminPanel').classList.add('active');
+                closeModal();
+                showToast('🔓 관리자 모드');
+                fetchStatus();
+            } else {
+                showToast('❌ 비밀번호 오류');
+                input.value = '';
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('passwordModal').classList.remove('active');
+            document.getElementById('passwordInput').value = '';
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
