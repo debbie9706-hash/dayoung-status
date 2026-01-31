@@ -11,88 +11,614 @@
     <meta name="apple-mobile-web-app-title" content="다영이 상태">
     <link rel="apple-touch-icon" href="./icon-192.png">
     <style>
-        :root{--primary:#6366F1;--primary-light:#818CF8;--primary-dark:#4F46E5;--secondary:#EC4899;--success:#10B981;--warning:#F59E0B;--danger:#EF4444;--bg:#F8FAFC;--card:#FFFFFF;--text:#1E293B;--text-muted:#64748B;--border:#E2E8F0;--shadow:0 4px 6px -1px rgba(0,0,0,0.1),0 2px 4px -2px rgba(0,0,0,0.1)}
-        *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-        body{font-family:-apple-system,BlinkMacSystemFont,'Malgun Gothic','맑은 고딕',sans-serif;background:var(--bg);min-height:100vh;color:var(--text);line-height:1.6}
-        .app{max-width:500px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
-        .header{text-align:center;padding:16px;background:linear-gradient(135deg,var(--primary) 0%,var(--secondary) 100%);color:white}
-        .header h1{font-size:1.2rem;font-weight:700}
-        .tab-nav{display:flex;background:white;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
-        .tab-btn{flex:1;padding:12px 8px;border:none;background:white;font-size:0.85rem;font-weight:600;color:var(--text-muted);cursor:pointer;border-bottom:3px solid transparent}
-        .tab-btn.active{color:var(--primary);border-bottom-color:var(--primary)}
-        .tab-content{flex:1;display:none;padding:16px;overflow-y:auto}
-        .tab-content.active{display:block}
-        .status-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
-        .status-card{background:white;border-radius:14px;padding:14px;text-align:center;box-shadow:var(--shadow);border:2px solid transparent}
-        .status-card.location-going_home{border-color:#A5F3FC;background:linear-gradient(180deg,#ECFEFF,white)}
-        .status-card.location-at_home{border-color:#BBF7D0;background:linear-gradient(180deg,#F0FDF4,white)}
-        .status-card.location-outside{border-color:#FDE68A;background:linear-gradient(180deg,#FFFBEB,white)}
-        .status-card.location-busy{border-color:#FECACA;background:linear-gradient(180deg,#FEF2F2,white)}
-        .status-card.hunger-hungry{border-color:#FBCFE8;background:linear-gradient(180deg,#FDF2F8,white)}
-        .status-card.hunger-not_hungry{border-color:#C7D2FE;background:linear-gradient(180deg,#EEF2FF,white)}
-        .status-label{font-size:0.7rem;color:var(--text-muted);margin-bottom:4px}
-        .status-emoji{font-size:2rem}
-        .status-text{font-size:0.8rem;font-weight:600;margin-top:4px}
-        .status-time{font-size:0.65rem;color:var(--text-muted);margin-top:2px}
-        .section{background:white;border-radius:14px;padding:14px;margin-bottom:14px;box-shadow:var(--shadow)}
-        .section-title{font-size:0.9rem;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:6px}
-        .input-group{margin-bottom:10px}
-        .input-label{font-size:0.75rem;font-weight:600;margin-bottom:4px;display:block}
-        .input-field{width:100%;padding:10px;border:2px solid var(--border);border-radius:10px;font-size:0.85rem;font-family:inherit;resize:none;min-height:50px}
-        .input-field:focus{outline:none;border-color:var(--primary)}
-        .btn{width:100%;padding:12px;border:none;border-radius:10px;font-size:0.9rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
-        .btn:active{transform:scale(0.98)}
-        .btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:white}
-        .btn-pink{background:linear-gradient(135deg,#EC4899,#DB2777);color:white}
-        .btn-outline{background:white;border:2px solid var(--border);color:var(--text)}
-        .calendar{background:white;border-radius:14px;padding:14px;box-shadow:var(--shadow)}
-        .calendar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-        .calendar-title{font-size:1rem;font-weight:700}
-        .calendar-nav{background:var(--bg);border:none;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:1rem}
-        .calendar-weekdays{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;margin-bottom:6px}
-        .calendar-weekday{font-size:0.7rem;font-weight:600;color:var(--text-muted);padding:6px 0}
-        .calendar-days{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
-        .calendar-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;font-size:0.8rem;cursor:pointer;position:relative}
-        .calendar-day:hover{background:var(--bg)}
-        .calendar-day.other-month{opacity:0.3}
-        .calendar-day.today{background:#EEF2FF;font-weight:700;color:var(--primary)}
-        .calendar-day.selected{background:var(--primary);color:white}
-        .calendar-day.has-data::after{content:'';position:absolute;bottom:3px;width:5px;height:5px;background:var(--secondary);border-radius:50%}
-        .day-detail{margin-top:14px;background:white;border-radius:14px;padding:14px;box-shadow:var(--shadow)}
-        .day-detail-title{font-size:0.95rem;font-weight:700;margin-bottom:10px}
-        .day-entry{padding:10px;background:var(--bg);border-radius:8px;margin-bottom:8px;font-size:0.8rem}
-        .day-entry-time{font-size:0.65rem;color:var(--text-muted)}
-        .day-entry img{max-width:100%;border-radius:6px;margin-top:6px}
-        .status-selector{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
-        .status-option{padding:10px;border:2px solid var(--border);border-radius:10px;background:white;cursor:pointer;text-align:center}
-        .status-option.selected{border-color:var(--primary);background:#EEF2FF}
-        .status-option .emoji{font-size:1.3rem;display:block}
-        .status-option .text{font-size:0.75rem;margin-top:2px}
-        .modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);justify-content:center;align-items:center;z-index:1000;padding:20px}
-        .modal-overlay.active{display:flex}
-        .modal{background:white;padding:20px;border-radius:16px;width:100%;max-width:280px;text-align:center}
-        .modal h3{font-size:1rem;margin-bottom:14px}
-        .modal-input{width:100%;padding:12px;border:2px solid var(--border);border-radius:10px;font-size:1.2rem;text-align:center;letter-spacing:8px;margin-bottom:14px}
-        .modal-input:focus{outline:none;border-color:var(--primary)}
-        .modal-buttons{display:flex;gap:8px}
-        .modal-buttons .btn{flex:1;padding:10px}
-        .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--text);color:white;padding:10px 20px;border-radius:10px;font-size:0.85rem;z-index:1000;transition:transform 0.3s}
-        .toast.show{transform:translateX(-50%) translateY(0)}
-        .push-banner{background:linear-gradient(135deg,var(--success),#059669);border-radius:10px;padding:10px 14px;margin-bottom:14px;color:white;display:flex;align-items:center;justify-content:space-between}
-        .push-banner.hidden{display:none}
-        .push-banner-text{font-size:0.8rem}
-        .push-banner-btn{background:white;color:var(--success);border:none;padding:6px 12px;border-radius:6px;font-weight:600;font-size:0.75rem;cursor:pointer}
-        .message-group{background:var(--bg);border-radius:10px;padding:10px;margin-bottom:8px}
-        .message-group-time{font-size:0.65rem;color:var(--text-muted);margin-bottom:6px}
-        .message-group-item{font-size:0.8rem;margin-bottom:4px;padding-left:14px;position:relative}
-        .message-group-item::before{content:'';position:absolute;left:0;top:6px;width:6px;height:6px;border-radius:50%}
-        .message-group-item.message::before{background:var(--primary)}
-        .message-group-item.advice::before{background:var(--secondary)}
-        .message-group-item.memo::before{background:var(--success)}
-        .loading{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;height:100%}
-        .loading-spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin 0.8s linear infinite}
-        @keyframes spin{to{transform:rotate(360deg)}}
-        .photo-preview{max-width:100%;border-radius:10px;margin:10px 0}
+        :root {
+            --primary: #6366F1;
+            --primary-light: #A5B4FC;
+            --primary-dark: #4F46E5;
+            --secondary: #EC4899;
+            --secondary-light: #F9A8D4;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --bg: linear-gradient(135deg, #F0F4FF 0%, #FCF0FF 50%, #FFF0F5 100%);
+            --card: rgba(255, 255, 255, 0.85);
+            --card-solid: #FFFFFF;
+            --text: #1E293B;
+            --text-muted: #64748B;
+            --border: rgba(99, 102, 241, 0.15);
+            --shadow: 0 8px 32px rgba(99, 102, 241, 0.12);
+            --shadow-sm: 0 4px 12px rgba(99, 102, 241, 0.08);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Malgun Gothic', '맑은 고딕', sans-serif;
+            background: var(--bg);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--text);
+            line-height: 1.6;
+        }
+        .app {
+            max-width: 500px;
+            margin: 0 auto;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* 헤더 */
+        .header {
+            text-align: center;
+            padding: 20px 16px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border-radius: 0 0 32px 32px;
+            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.3);
+        }
+        .header h1 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* 탭 네비게이션 */
+        .tab-nav {
+            display: flex;
+            background: var(--card);
+            backdrop-filter: blur(20px);
+            margin: -16px 16px 0;
+            border-radius: 20px;
+            padding: 6px;
+            box-shadow: var(--shadow);
+            position: relative;
+            z-index: 100;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 12px 8px;
+            border: none;
+            background: transparent;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+        .tab-btn.active {
+            color: white;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+        
+        /* 탭 컨텐츠 */
+        .tab-content {
+            flex: 1;
+            display: none;
+            padding: 20px 16px;
+            overflow-y: auto;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* 상태 카드 */
+        .status-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .status-card {
+            background: var(--card);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 18px 14px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .status-card:active {
+            transform: scale(0.98);
+        }
+        .status-card.location-going_home { border-color: #A5F3FC; background: linear-gradient(180deg, rgba(236,254,255,0.9) 0%, rgba(255,255,255,0.9) 100%); }
+        .status-card.location-at_home { border-color: #BBF7D0; background: linear-gradient(180deg, rgba(240,253,244,0.9) 0%, rgba(255,255,255,0.9) 100%); }
+        .status-card.location-outside { border-color: #FDE68A; background: linear-gradient(180deg, rgba(255,251,235,0.9) 0%, rgba(255,255,255,0.9) 100%); }
+        .status-card.location-busy { border-color: #FECACA; background: linear-gradient(180deg, rgba(254,242,242,0.9) 0%, rgba(255,255,255,0.9) 100%); }
+        .status-card.hunger-hungry { border-color: #FBCFE8; background: linear-gradient(180deg, rgba(253,242,248,0.9) 0%, rgba(255,255,255,0.9) 100%); }
+        .status-card.hunger-not_hungry { border-color: #C7D2FE; background: linear-gradient(180deg, rgba(238,242,255,0.9) 0%, rgba(255,255,255,0.9) 100%); }
+        .status-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+        .status-emoji {
+            font-size: 2.2rem;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+        }
+        .status-text {
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-top: 6px;
+        }
+        .status-time {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        
+        /* 섹션 카드 */
+        .section {
+            background: var(--card);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 18px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow-sm);
+        }
+        .section-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* 입력 필드 */
+        .input-group {
+            margin-bottom: 12px;
+        }
+        .input-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            display: block;
+            color: var(--text-muted);
+        }
+        .input-field {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            resize: none;
+            min-height: 56px;
+            background: rgba(255,255,255,0.8);
+            transition: all 0.3s ease;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+        
+        /* 버튼 */
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 16px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        .btn:active {
+            transform: scale(0.97);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+        }
+        .btn-primary:hover {
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+        }
+        .btn-pink {
+            background: linear-gradient(135deg, #EC4899 0%, #DB2777 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4);
+        }
+        .btn-outline {
+            background: white;
+            border: 2px solid var(--border);
+            color: var(--text);
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+        
+        /* 달력 */
+        .calendar {
+            background: var(--card);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 18px;
+            box-shadow: var(--shadow-sm);
+        }
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .calendar-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+        .calendar-nav {
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: white;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s;
+        }
+        .calendar-nav:active {
+            transform: scale(0.95);
+        }
+        .calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .calendar-weekday {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            padding: 8px 0;
+        }
+        .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        .calendar-day:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+        .calendar-day.other-month {
+            opacity: 0.3;
+        }
+        .calendar-day.today {
+            background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);
+            font-weight: 700;
+            color: var(--primary);
+            box-shadow: inset 0 0 0 2px var(--primary);
+        }
+        .calendar-day.selected {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+        .calendar-day.has-data::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            width: 6px;
+            height: 6px;
+            background: var(--secondary);
+            border-radius: 50%;
+        }
+        
+        /* 날짜 상세 */
+        .day-detail {
+            margin-top: 16px;
+            background: var(--card);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 18px;
+            box-shadow: var(--shadow-sm);
+        }
+        .day-detail-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+        .day-entry {
+            padding: 14px;
+            background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+            border-radius: 16px;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+            position: relative;
+            border-left: 4px solid var(--primary);
+        }
+        .day-entry.advice { border-left-color: var(--secondary); }
+        .day-entry.memo { border-left-color: var(--success); }
+        .day-entry.calendar { border-left-color: var(--warning); }
+        .day-entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .day-entry-time {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+        .day-entry-delete {
+            width: 28px;
+            height: 28px;
+            border: none;
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            color: var(--danger);
+            transition: all 0.2s;
+        }
+        .day-entry-delete:hover {
+            background: var(--danger);
+            color: white;
+        }
+        .day-entry img {
+            max-width: 100%;
+            border-radius: 12px;
+            margin-top: 8px;
+        }
+        
+        /* 상태 선택 */
+        .status-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        .status-option {
+            padding: 14px 10px;
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            background: white;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .status-option:active {
+            transform: scale(0.97);
+        }
+        .status-option.selected {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+        }
+        .status-option .emoji {
+            font-size: 1.6rem;
+            display: block;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+        .status-option .text {
+            font-size: 0.8rem;
+            margin-top: 4px;
+            font-weight: 600;
+        }
+        
+        /* 모달 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal {
+            background: white;
+            padding: 28px 24px;
+            border-radius: 28px;
+            width: 100%;
+            max-width: 300px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        .modal h3 {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+        .modal-input {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            font-size: 1.5rem;
+            text-align: center;
+            letter-spacing: 12px;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        .modal-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .modal-buttons .btn {
+            flex: 1;
+            padding: 12px;
+        }
+        
+        /* 토스트 */
+        .toast {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: linear-gradient(135deg, var(--text) 0%, #0F172A 100%);
+            color: white;
+            padding: 14px 28px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            z-index: 1000;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        /* 푸시 배너 */
+        .push-banner {
+            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+            border-radius: 16px;
+            padding: 14px 18px;
+            margin-bottom: 16px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        .push-banner.hidden {
+            display: none;
+        }
+        .push-banner-text {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .push-banner-btn {
+            background: white;
+            color: var(--success);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        
+        /* 메시지 그룹 */
+        .message-group {
+            background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+            border-radius: 16px;
+            padding: 14px;
+            margin-bottom: 10px;
+        }
+        .message-group-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .message-group-time {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+        .message-group-delete {
+            width: 26px;
+            height: 26px;
+            border: none;
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            color: var(--danger);
+        }
+        .message-group-delete:hover {
+            background: var(--danger);
+            color: white;
+        }
+        .message-group-item {
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+            padding-left: 18px;
+            position: relative;
+        }
+        .message-group-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 7px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        .message-group-item.message::before { background: var(--primary); }
+        .message-group-item.advice::before { background: var(--secondary); }
+        .message-group-item.memo::before { background: var(--success); }
+        .message-group-item:last-child { margin-bottom: 0; }
+        
+        /* 로딩 */
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 20px;
+            height: 100%;
+        }
+        .loading-spinner {
+            width: 44px;
+            height: 44px;
+            border: 4px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .photo-preview {
+            max-width: 100%;
+            border-radius: 16px;
+            margin: 12px 0;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 32px 16px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        .empty-state-emoji {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
     </style>
 </head>
 <body>
@@ -100,21 +626,25 @@
     <header class="header">
         <h1>💕 다영이 상태</h1>
     </header>
+    
     <nav class="tab-nav">
         <button class="tab-btn active" data-tab="home">🏠 홈</button>
         <button class="tab-btn" data-tab="calendar">📅 달력</button>
         <button class="tab-btn" data-tab="dayoung">👧 다영</button>
     </nav>
+    
     <div id="loading" class="loading tab-content active">
         <div class="loading-spinner"></div>
-        <p style="margin-top:12px;color:var(--text-muted);font-size:0.85rem">불러오는 중...</p>
+        <p style="margin-top:16px;color:var(--text-muted);font-size:0.9rem">불러오는 중...</p>
     </div>
+    
     <!-- 홈 탭 -->
     <div id="tab-home" class="tab-content">
         <div id="pushBanner" class="push-banner hidden">
             <span class="push-banner-text">🔔 알림 받기</span>
             <button class="push-banner-btn" onclick="subscribePush()">허용</button>
         </div>
+        
         <div class="status-grid">
             <div id="locationCard" class="status-card location-going_home">
                 <div class="status-label">📍 다영이 위치</div>
@@ -129,15 +659,22 @@
                 <div id="hungerTime" class="status-time"></div>
             </div>
         </div>
+        
         <div class="section">
             <div class="section-title">💬 오늘의 메시지</div>
-            <div id="todayMessages"><p style="color:var(--text-muted);font-size:0.8rem;text-align:center;padding:16px 0">메시지가 없어요</p></div>
+            <div id="todayMessages">
+                <div class="empty-state">
+                    <div class="empty-state-emoji">💭</div>
+                    <p>오늘의 메시지가 없어요</p>
+                </div>
+            </div>
         </div>
+        
         <div class="section">
             <div class="section-title">👨 아버지 메모</div>
             <div class="input-group">
                 <label class="input-label">💬 하고싶은 말</label>
-                <textarea id="fatherMessage" class="input-field" placeholder="다영이에게..."></textarea>
+                <textarea id="fatherMessage" class="input-field" placeholder="다영이에게 하고싶은 말..."></textarea>
             </div>
             <div class="input-group">
                 <label class="input-label">❤️ 당부</label>
@@ -150,6 +687,7 @@
             <button class="btn btn-primary" onclick="saveFatherMemo()">💾 한번에 저장</button>
         </div>
     </div>
+    
     <!-- 달력 탭 -->
     <div id="tab-calendar" class="tab-content">
         <div class="calendar">
@@ -169,54 +707,57 @@
             </div>
             <div class="calendar-days" id="calendarDays"></div>
         </div>
+        
         <div id="dayDetail" class="day-detail" style="display:none">
             <div class="day-detail-title" id="dayDetailTitle"></div>
             <div id="dayEntries"></div>
-            <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
-                <textarea id="calendarMemo" class="input-field" placeholder="이 날의 메모..."></textarea>
+            <div style="margin-top:16px;padding-top:16px;border-top:2px solid var(--border)">
+                <textarea id="calendarMemo" class="input-field" placeholder="이 날의 메모 추가..."></textarea>
                 <input type="file" id="photoUpload" accept="image/*" onchange="previewPhoto(event)" style="display:none">
                 <img id="photoPreview" class="photo-preview" style="display:none">
-                <div style="display:flex;gap:8px;margin-top:10px">
-                    <button class="btn btn-outline" onclick="document.getElementById('photoUpload').click()" style="flex:1">📷</button>
+                <div style="display:flex;gap:10px;margin-top:12px">
+                    <button class="btn btn-outline" onclick="document.getElementById('photoUpload').click()" style="flex:1">📷 사진</button>
                     <button class="btn btn-primary" onclick="saveCalendarEntry()" style="flex:2">💾 저장</button>
                 </div>
             </div>
         </div>
     </div>
+    
     <!-- 다영 탭 -->
     <div id="tab-dayoung" class="tab-content">
-        <div id="dayoungLocked" style="text-align:center;padding:50px 20px">
-            <div style="font-size:3.5rem;margin-bottom:14px">🔐</div>
-            <p style="color:var(--text-muted);margin-bottom:16px;font-size:0.85rem">다영이 전용 화면</p>
-            <button class="btn btn-pink" onclick="showPasswordModal()" style="max-width:180px;margin:0 auto">비밀번호 입력</button>
+        <div id="dayoungLocked" style="text-align:center;padding:60px 20px">
+            <div style="font-size:4rem;margin-bottom:16px;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.1))">🔐</div>
+            <p style="color:var(--text-muted);margin-bottom:20px;font-size:0.9rem">다영이 전용 화면이에요</p>
+            <button class="btn btn-pink" onclick="showPasswordModal()" style="max-width:200px;margin:0 auto">비밀번호 입력</button>
         </div>
         <div id="dayoungUnlocked" style="display:none">
             <div class="section">
                 <div class="section-title">👧 내 상태 변경</div>
-                <div class="input-label">📍 위치</div>
+                <div class="input-label">📍 지금 어디에 있어요?</div>
                 <div class="status-selector" id="locationSelector">
                     <div class="status-option" data-value="going_home"><span class="emoji">🚶</span><span class="text">집에 가는 중</span></div>
-                    <div class="status-option" data-value="at_home"><span class="emoji">🏠</span><span class="text">집 도착</span></div>
-                    <div class="status-option" data-value="outside"><span class="emoji">🌙</span><span class="text">밖에</span></div>
+                    <div class="status-option" data-value="at_home"><span class="emoji">🏠</span><span class="text">집 도착!</span></div>
+                    <div class="status-option" data-value="outside"><span class="emoji">🌙</span><span class="text">밖에 있어요</span></div>
                     <div class="status-option" data-value="busy"><span class="emoji">💼</span><span class="text">바빠요</span></div>
                 </div>
-                <div class="input-label">🍚 배고픔</div>
+                <div class="input-label">🍚 배고파요?</div>
                 <div class="status-selector" id="hungerSelector">
                     <div class="status-option" data-value="not_hungry"><span class="emoji">😊</span><span class="text">안 고파요</span></div>
-                    <div class="status-option" data-value="hungry"><span class="emoji">🍽️</span><span class="text">배고파요</span></div>
+                    <div class="status-option" data-value="hungry"><span class="emoji">🍽️</span><span class="text">배고파요!</span></div>
                 </div>
-                <div class="input-group" style="margin-top:12px">
-                    <label class="input-label">💬 아버지에게</label>
-                    <textarea id="dayoungMessage" class="input-field" placeholder="메시지..."></textarea>
+                <div class="input-group" style="margin-top:14px">
+                    <label class="input-label">💬 아버지에게 메시지</label>
+                    <textarea id="dayoungMessage" class="input-field" placeholder="아버지에게 하고 싶은 말..."></textarea>
                 </div>
-                <button class="btn btn-pink" onclick="saveDayoungStatus()">💕 저장</button>
+                <button class="btn btn-pink" onclick="saveDayoungStatus()">💕 저장하기</button>
             </div>
         </div>
     </div>
 </div>
+
 <div id="passwordModal" class="modal-overlay">
     <div class="modal">
-        <h3>🔐 비밀번호</h3>
+        <h3>🔐 비밀번호 입력</h3>
         <input type="password" id="passwordInput" class="modal-input" maxlength="4" placeholder="••••" inputmode="numeric">
         <div class="modal-buttons">
             <button class="btn btn-outline" onclick="closePasswordModal()">취소</button>
@@ -224,16 +765,29 @@
         </div>
     </div>
 </div>
+
 <div id="toast" class="toast"></div>
+
 <script>
 const API_URL='https://dayoung-api-v2-937334177552.asia-northeast3.run.app';
 const VAPID_KEY='BMcQVh8osasMQwurhtnGOGEM9f2saQUA7t0JchYvqY03a3lITmeDVhlBd8YJhqT4hDsWiQtCqHfrGsQhGGMShGM';
 const DAYOUNG_PW='2428';
-let currentData={},selectedDate=null,currentMonth=new Date(),selectedLocation=null,selectedHunger=null,photoData=null;
-const locMap={going_home:{e:'🚶',t:'집에 가는 중'},at_home:{e:'🏠',t:'집 도착!'},outside:{e:'🌙',t:'밖에'},busy:{e:'💼',t:'바빠요'}};
-const hunMap={not_hungry:{e:'😊',t:'안 고파요'},hungry:{e:'🍽️',t:'배고파요'}};
 
-document.addEventListener('DOMContentLoaded',()=>{
+let currentData={}, selectedDate=null, currentMonth=new Date();
+let selectedLocation=null, selectedHunger=null, photoData=null;
+
+const locMap = {
+    going_home: {e:'🚶', t:'집에 가는 중'},
+    at_home: {e:'🏠', t:'집 도착!'},
+    outside: {e:'🌙', t:'밖에 있어요'},
+    busy: {e:'💼', t:'바빠요'}
+};
+const hunMap = {
+    not_hungry: {e:'😊', t:'안 고파요'},
+    hungry: {e:'🍽️', t:'배고파요'}
+};
+
+document.addEventListener('DOMContentLoaded', () => {
     initTabs();
     fetchData();
     initSelectors();
@@ -242,277 +796,295 @@ document.addEventListener('DOMContentLoaded',()=>{
     renderCalendar();
 });
 
-function initTabs(){
-    document.querySelectorAll('.tab-btn').forEach(btn=>{
-        btn.onclick=()=>{
-            document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+function initTabs() {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.onclick = () => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             btn.classList.add('active');
-            document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+            document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
         };
     });
 }
 
-function initSelectors(){
-    document.querySelectorAll('#locationSelector .status-option').forEach(opt=>{
-        opt.onclick=()=>{
-            document.querySelectorAll('#locationSelector .status-option').forEach(o=>o.classList.remove('selected'));
+function initSelectors() {
+    document.querySelectorAll('#locationSelector .status-option').forEach(opt => {
+        opt.onclick = () => {
+            document.querySelectorAll('#locationSelector .status-option').forEach(o => o.classList.remove('selected'));
             opt.classList.add('selected');
-            selectedLocation=opt.dataset.value;
+            selectedLocation = opt.dataset.value;
         };
     });
-    document.querySelectorAll('#hungerSelector .status-option').forEach(opt=>{
-        opt.onclick=()=>{
-            document.querySelectorAll('#hungerSelector .status-option').forEach(o=>o.classList.remove('selected'));
+    document.querySelectorAll('#hungerSelector .status-option').forEach(opt => {
+        opt.onclick = () => {
+            document.querySelectorAll('#hungerSelector .status-option').forEach(o => o.classList.remove('selected'));
             opt.classList.add('selected');
-            selectedHunger=opt.dataset.value;
+            selectedHunger = opt.dataset.value;
         };
     });
 }
 
-async function fetchData(){
-    try{
-        const res=await fetch(API_URL);
-        currentData=await res.json();
+async function fetchData() {
+    try {
+        const res = await fetch(API_URL);
+        currentData = await res.json();
         document.getElementById('loading').classList.remove('active');
         document.getElementById('tab-home').classList.add('active');
         updateDisplay();
-    }catch(e){
-        document.getElementById('loading').innerHTML='<p style="color:var(--danger)">연결 실패</p>';
+    } catch(e) {
+        document.getElementById('loading').innerHTML = '<div class="empty-state"><div class="empty-state-emoji">😢</div><p>연결할 수 없어요</p></div>';
     }
 }
 
-function updateDisplay(){
-    const loc=locMap[currentData.location]||locMap.going_home;
-    document.getElementById('locationEmoji').textContent=loc.e;
-    document.getElementById('locationText').textContent=loc.t;
-    document.getElementById('locationCard').className='status-card location-'+(currentData.location||'going_home');
-    if(currentData.locationUpdated)document.getElementById('locationTime').textContent=formatTime(currentData.locationUpdated);
+function updateDisplay() {
+    const loc = locMap[currentData.location] || locMap.going_home;
+    document.getElementById('locationEmoji').textContent = loc.e;
+    document.getElementById('locationText').textContent = loc.t;
+    document.getElementById('locationCard').className = 'status-card location-' + (currentData.location || 'going_home');
+    if(currentData.locationUpdated) document.getElementById('locationTime').textContent = formatTime(currentData.locationUpdated);
     
-    const hun=hunMap[currentData.hunger]||hunMap.not_hungry;
-    document.getElementById('hungerEmoji').textContent=hun.e;
-    document.getElementById('hungerText').textContent=hun.t;
-    document.getElementById('hungerCard').className='status-card hunger-'+(currentData.hunger||'not_hungry');
-    if(currentData.hungerUpdated)document.getElementById('hungerTime').textContent=formatTime(currentData.hungerUpdated);
+    const hun = hunMap[currentData.hunger] || hunMap.not_hungry;
+    document.getElementById('hungerEmoji').textContent = hun.e;
+    document.getElementById('hungerText').textContent = hun.t;
+    document.getElementById('hungerCard').className = 'status-card hunger-' + (currentData.hunger || 'not_hungry');
+    if(currentData.hungerUpdated) document.getElementById('hungerTime').textContent = formatTime(currentData.hungerUpdated);
     
     displayTodayMessages();
     renderCalendar();
 }
 
-function displayTodayMessages(){
-    const container=document.getElementById('todayMessages');
-    const today=new Date().toISOString().split('T')[0];
-    const msgs=(currentData.messages||[]).filter(m=>m.timestamp&&m.timestamp.startsWith(today));
+function displayTodayMessages() {
+    const container = document.getElementById('todayMessages');
+    const today = new Date().toISOString().split('T')[0];
+    const msgs = (currentData.messages || []).filter(m => m.timestamp && m.timestamp.startsWith(today) && m.type !== 'calendar');
     
-    if(!msgs.length){
-        container.innerHTML='<p style="color:var(--text-muted);font-size:0.8rem;text-align:center;padding:16px 0">오늘의 메시지가 없어요</p>';
+    if(!msgs.length) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-state-emoji">💭</div><p>오늘의 메시지가 없어요</p></div>';
         return;
     }
     
-    const grouped={};
-    msgs.forEach(m=>{
-        const time=m.timestamp.substring(11,16);
-        if(!grouped[time])grouped[time]=[];
-        grouped[time].push(m);
+    let html = '';
+    msgs.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach(m => {
+        const time = m.timestamp.substring(11, 16);
+        const icon = m.sender === 'dad' ? '👨' : '👧';
+        html += `<div class="message-group">
+            <div class="message-group-header">
+                <span class="message-group-time">${time} ${icon}</span>
+                <button class="message-group-delete" onclick="deleteMessage('${m.id}')">🗑️</button>
+            </div>
+            <div class="message-group-item ${m.type}">${m.content}</div>
+        </div>`;
     });
-    
-    let html='';
-    Object.keys(grouped).sort().reverse().forEach(time=>{
-        html+=`<div class="message-group"><div class="message-group-time">${time}</div>`;
-        grouped[time].forEach(m=>{
-            const icon=m.sender==='dad'?'👨':'👧';
-            html+=`<div class="message-group-item ${m.type}">${icon} ${m.content}</div>`;
+    container.innerHTML = html;
+}
+
+async function deleteMessage(id) {
+    if(!confirm('이 메시지를 삭제할까요?')) return;
+    try {
+        const res = await fetch(API_URL, {
+            method: 'DELETE',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({messageId: id})
         });
-        html+='</div>';
-    });
-    container.innerHTML=html;
+        currentData = await res.json();
+        updateDisplay();
+        showToast('🗑️ 삭제 완료');
+    } catch(e) {
+        showToast('❌ 삭제 실패');
+    }
 }
 
-async function saveFatherMemo(){
-    const msg=document.getElementById('fatherMessage').value.trim();
-    const adv=document.getElementById('fatherAdvice').value.trim();
-    const memo=document.getElementById('fatherMemo').value.trim();
-    if(!msg&&!adv&&!memo){showToast('내용을 입력하세요');return;}
+async function saveFatherMemo() {
+    const msg = document.getElementById('fatherMessage').value.trim();
+    const adv = document.getElementById('fatherAdvice').value.trim();
+    const memo = document.getElementById('fatherMemo').value.trim();
+    if(!msg && !adv && !memo) { showToast('내용을 입력하세요'); return; }
     
-    try{
-        const body={};
-        if(msg)body.fatherMessage=msg;
-        if(adv)body.fatherAdvice=adv;
-        if(memo)body.fatherMemo=memo;
-        const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-        currentData=await res.json();
+    try {
+        const body = {};
+        if(msg) body.fatherMessage = msg;
+        if(adv) body.fatherAdvice = adv;
+        if(memo) body.fatherMemo = memo;
+        const res = await fetch(API_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+        currentData = await res.json();
         updateDisplay();
-        document.getElementById('fatherMessage').value='';
-        document.getElementById('fatherAdvice').value='';
-        document.getElementById('fatherMemo').value='';
+        document.getElementById('fatherMessage').value = '';
+        document.getElementById('fatherAdvice').value = '';
+        document.getElementById('fatherMemo').value = '';
         showToast('✅ 저장 완료!');
-    }catch(e){showToast('❌ 저장 실패');}
+    } catch(e) { showToast('❌ 저장 실패'); }
 }
 
-async function saveDayoungStatus(){
-    const msg=document.getElementById('dayoungMessage').value.trim();
-    if(!selectedLocation&&!selectedHunger&&!msg){showToast('변경할 내용을 선택하세요');return;}
+async function saveDayoungStatus() {
+    const msg = document.getElementById('dayoungMessage').value.trim();
+    if(!selectedLocation && !selectedHunger && !msg) { showToast('변경할 내용을 선택하세요'); return; }
     
-    try{
-        const body={};
-        if(selectedLocation)body.location=selectedLocation;
-        if(selectedHunger)body.hunger=selectedHunger;
-        if(msg)body.dayoungMessage=msg;
-        const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-        currentData=await res.json();
+    try {
+        const body = {};
+        if(selectedLocation) body.location = selectedLocation;
+        if(selectedHunger) body.hunger = selectedHunger;
+        if(msg) body.dayoungMessage = msg;
+        const res = await fetch(API_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+        currentData = await res.json();
         updateDisplay();
-        document.getElementById('dayoungMessage').value='';
+        document.getElementById('dayoungMessage').value = '';
         showToast('💕 저장 완료!');
-    }catch(e){showToast('❌ 저장 실패');}
+    } catch(e) { showToast('❌ 저장 실패'); }
 }
 
 // 달력
-function renderCalendar(){
-    const year=currentMonth.getFullYear(),month=currentMonth.getMonth();
-    document.getElementById('calendarTitle').textContent=`${year}년 ${month+1}월`;
+function renderCalendar() {
+    const year = currentMonth.getFullYear(), month = currentMonth.getMonth();
+    document.getElementById('calendarTitle').textContent = `${year}년 ${month + 1}월`;
     
-    const firstDay=new Date(year,month,1).getDay();
-    const lastDate=new Date(year,month+1,0).getDate();
-    const today=new Date();
-    const todayStr=today.toISOString().split('T')[0];
+    const firstDay = new Date(year, month, 1).getDay();
+    const lastDate = new Date(year, month + 1, 0).getDate();
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
     
-    const datesWithData=new Set();
-    (currentData.messages||[]).forEach(m=>{
-        if(m.timestamp)datesWithData.add(m.timestamp.split('T')[0]);
+    const datesWithData = new Set();
+    (currentData.messages || []).forEach(m => {
+        if(m.timestamp) datesWithData.add(m.timestamp.split('T')[0]);
     });
     
-    let html='';
-    for(let i=0;i<firstDay;i++){
-        const d=new Date(year,month,0-firstDay+i+1).getDate();
-        html+=`<div class="calendar-day other-month">${d}</div>`;
+    let html = '';
+    for(let i = 0; i < firstDay; i++) {
+        const d = new Date(year, month, 0 - firstDay + i + 1).getDate();
+        html += `<div class="calendar-day other-month">${d}</div>`;
     }
-    for(let d=1;d<=lastDate;d++){
-        const dateStr=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-        const isToday=dateStr===todayStr;
-        const hasData=datesWithData.has(dateStr);
-        const isSelected=selectedDate===dateStr;
-        html+=`<div class="calendar-day${isToday?' today':''}${hasData?' has-data':''}${isSelected?' selected':''}" onclick="selectDate('${dateStr}')">${d}</div>`;
+    for(let d = 1; d <= lastDate; d++) {
+        const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const isToday = dateStr === todayStr;
+        const hasData = datesWithData.has(dateStr);
+        const isSelected = selectedDate === dateStr;
+        html += `<div class="calendar-day${isToday?' today':''}${hasData?' has-data':''}${isSelected?' selected':''}" onclick="selectDate('${dateStr}')">${d}</div>`;
     }
-    document.getElementById('calendarDays').innerHTML=html;
+    document.getElementById('calendarDays').innerHTML = html;
 }
 
-function changeMonth(delta){
-    currentMonth.setMonth(currentMonth.getMonth()+delta);
+function changeMonth(delta) {
+    currentMonth.setMonth(currentMonth.getMonth() + delta);
     renderCalendar();
 }
 
-function selectDate(dateStr){
-    selectedDate=dateStr;
+function selectDate(dateStr) {
+    selectedDate = dateStr;
     renderCalendar();
     showDayDetail(dateStr);
 }
 
-function showDayDetail(dateStr){
-    const[y,m,d]=dateStr.split('-');
-    document.getElementById('dayDetailTitle').textContent=`${parseInt(m)}월 ${parseInt(d)}일 기록`;
-    document.getElementById('dayDetail').style.display='block';
+function showDayDetail(dateStr) {
+    const [y, m, d] = dateStr.split('-');
+    document.getElementById('dayDetailTitle').textContent = `📅 ${parseInt(m)}월 ${parseInt(d)}일 기록`;
+    document.getElementById('dayDetail').style.display = 'block';
     
-    const entries=(currentData.messages||[]).filter(msg=>msg.timestamp&&msg.timestamp.startsWith(dateStr));
-    const container=document.getElementById('dayEntries');
+    const entries = (currentData.messages || []).filter(msg => msg.timestamp && msg.timestamp.startsWith(dateStr));
+    const container = document.getElementById('dayEntries');
     
-    if(!entries.length){
-        container.innerHTML='<p style="color:var(--text-muted);font-size:0.8rem;text-align:center;padding:12px">기록이 없어요</p>';
-    }else{
-        container.innerHTML=entries.map(e=>{
-            const time=e.timestamp.substring(11,16);
-            const icon=e.sender==='dad'?'👨':'👧';
-            let content=`<div class="day-entry"><div class="day-entry-time">${time} ${icon}</div><div>${e.content}</div>`;
-            if(e.photo)content+=`<img src="${e.photo}">`;
-            content+='</div>';
+    if(!entries.length) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-state-emoji">📝</div><p>이 날의 기록이 없어요</p></div>';
+    } else {
+        container.innerHTML = entries.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)).map(e => {
+            const time = e.timestamp.substring(11, 16);
+            const icon = e.sender === 'dad' ? '👨' : '👧';
+            let content = `<div class="day-entry ${e.type}">
+                <div class="day-entry-header">
+                    <span class="day-entry-time">${time} ${icon}</span>
+                    <button class="day-entry-delete" onclick="deleteMessage('${e.id}')">🗑️</button>
+                </div>
+                <div>${e.content}</div>`;
+            if(e.photo) content += `<img src="${e.photo}">`;
+            content += '</div>';
             return content;
         }).join('');
     }
     
-    document.getElementById('calendarMemo').value='';
-    document.getElementById('photoPreview').style.display='none';
-    photoData=null;
+    document.getElementById('calendarMemo').value = '';
+    document.getElementById('photoPreview').style.display = 'none';
+    photoData = null;
 }
 
-function previewPhoto(e){
-    const file=e.target.files[0];
-    if(!file)return;
-    const reader=new FileReader();
-    reader.onload=ev=>{
-        photoData=ev.target.result;
-        document.getElementById('photoPreview').src=photoData;
-        document.getElementById('photoPreview').style.display='block';
+function previewPhoto(e) {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+        photoData = ev.target.result;
+        document.getElementById('photoPreview').src = photoData;
+        document.getElementById('photoPreview').style.display = 'block';
     };
     reader.readAsDataURL(file);
 }
 
-async function saveCalendarEntry(){
-    const memo=document.getElementById('calendarMemo').value.trim();
-    if(!memo&&!photoData){showToast('내용을 입력하세요');return;}
-    if(!selectedDate){showToast('날짜를 선택하세요');return;}
+async function saveCalendarEntry() {
+    const memo = document.getElementById('calendarMemo').value.trim();
+    if(!memo && !photoData) { showToast('내용을 입력하세요'); return; }
+    if(!selectedDate) { showToast('날짜를 선택하세요'); return; }
     
-    try{
-        const body={calendarEntry:{date:selectedDate,memo,photo:photoData}};
-        const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-        currentData=await res.json();
+    try {
+        const body = {calendarEntry: {date: selectedDate, memo, photo: photoData}};
+        const res = await fetch(API_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)});
+        currentData = await res.json();
         showDayDetail(selectedDate);
-        document.getElementById('calendarMemo').value='';
-        document.getElementById('photoPreview').style.display='none';
-        photoData=null;
+        renderCalendar();
+        document.getElementById('calendarMemo').value = '';
+        document.getElementById('photoPreview').style.display = 'none';
+        photoData = null;
         showToast('✅ 저장 완료!');
-    }catch(e){showToast('❌ 저장 실패');}
+    } catch(e) { showToast('❌ 저장 실패'); }
 }
 
 // 비밀번호
-function showPasswordModal(){
+function showPasswordModal() {
     document.getElementById('passwordModal').classList.add('active');
-    document.getElementById('passwordInput').value='';
-    document.getElementById('passwordInput').focus();
+    document.getElementById('passwordInput').value = '';
+    setTimeout(() => document.getElementById('passwordInput').focus(), 100);
 }
-function closePasswordModal(){document.getElementById('passwordModal').classList.remove('active');}
-function checkPassword(){
-    if(document.getElementById('passwordInput').value===DAYOUNG_PW){
+function closePasswordModal() { document.getElementById('passwordModal').classList.remove('active'); }
+function checkPassword() {
+    if(document.getElementById('passwordInput').value === DAYOUNG_PW) {
         closePasswordModal();
-        document.getElementById('dayoungLocked').style.display='none';
-        document.getElementById('dayoungUnlocked').style.display='block';
+        document.getElementById('dayoungLocked').style.display = 'none';
+        document.getElementById('dayoungUnlocked').style.display = 'block';
         showToast('🔓 잠금 해제!');
-    }else{
-        showToast('❌ 비밀번호 틀림');
-        document.getElementById('passwordInput').value='';
+    } else {
+        showToast('❌ 비밀번호가 틀렸어요');
+        document.getElementById('passwordInput').value = '';
     }
 }
-document.getElementById('passwordInput').addEventListener('keypress',e=>{if(e.key==='Enter')checkPassword();});
+document.getElementById('passwordInput').addEventListener('keypress', e => { if(e.key === 'Enter') checkPassword(); });
 
 // Push
-async function registerSW(){if('serviceWorker'in navigator)await navigator.serviceWorker.register('./sw.js');}
-async function checkPush(){
-    if(!('PushManager'in window))return;
-    const reg=await navigator.serviceWorker.ready;
-    const sub=await reg.pushManager.getSubscription();
-    document.getElementById('pushBanner').classList.toggle('hidden',!!sub);
+async function registerSW() { if('serviceWorker' in navigator) await navigator.serviceWorker.register('./sw.js'); }
+async function checkPush() {
+    if(!('PushManager' in window)) return;
+    const reg = await navigator.serviceWorker.ready;
+    const sub = await reg.pushManager.getSubscription();
+    document.getElementById('pushBanner').classList.toggle('hidden', !!sub);
 }
-async function subscribePush(){
-    try{
-        const perm=await Notification.requestPermission();
-        if(perm!=='granted'){showToast('알림 권한 거부됨');return;}
-        const reg=await navigator.serviceWorker.ready;
-        const sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:urlB64(VAPID_KEY)});
-        await fetch(API_URL+'/subscribe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({subscription:sub.toJSON(),role:'dad'})});
+async function subscribePush() {
+    try {
+        const perm = await Notification.requestPermission();
+        if(perm !== 'granted') { showToast('알림 권한이 거부됨'); return; }
+        const reg = await navigator.serviceWorker.ready;
+        const sub = await reg.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:urlB64(VAPID_KEY)});
+        await fetch(API_URL + '/subscribe', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({subscription:sub.toJSON(), role:'dad'})});
         document.getElementById('pushBanner').classList.add('hidden');
         showToast('🔔 알림 등록 완료!');
-    }catch(e){showToast('알림 등록 실패');}
+    } catch(e) { showToast('알림 등록 실패'); }
 }
-function urlB64(b64){const p='='.repeat((4-b64.length%4)%4);const b=(b64+p).replace(/-/g,'+').replace(/_/g,'/');return Uint8Array.from(atob(b),c=>c.charCodeAt(0));}
+function urlB64(b64) { const p='='.repeat((4-b64.length%4)%4); const b=(b64+p).replace(/-/g,'+').replace(/_/g,'/'); return Uint8Array.from(atob(b),c=>c.charCodeAt(0)); }
 
-function formatTime(ts){
-    const d=new Date(ts);
-    const h=d.getHours(),m=d.getMinutes();
-    return `${h<12?'오전':'오후'} ${h%12||12}:${String(m).padStart(2,'0')}`;
+function formatTime(ts) {
+    const d = new Date(ts);
+    const h = d.getHours(), m = d.getMinutes();
+    return `${h < 12 ? '오전' : '오후'} ${h % 12 || 12}:${String(m).padStart(2, '0')}`;
 }
-function showToast(msg){
-    const t=document.getElementById('toast');
-    t.textContent=msg;
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
     t.classList.add('show');
-    setTimeout(()=>t.classList.remove('show'),2500);
+    setTimeout(() => t.classList.remove('show'), 2500);
 }
 </script>
 </body>
