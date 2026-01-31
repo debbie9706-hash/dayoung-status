@@ -2,7 +2,7 @@
   "name": "다영이 상태 알림",
   "short_name": "다영이 상태",
   "description": "아버지와 다영이가 실시간으로 소통하는 상태 알림 앱",
-  "start_url": "/index.html",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#5B8A72",
@@ -35,7 +35,7 @@
       "name": "상태 확인",
       "short_name": "상태",
       "description": "다영이의 상태를 빠르게 확인합니다",
-      "url": "/index.html",
+      "url": "./",
       "icons": [
         {
           "src": "icon-192.png",
