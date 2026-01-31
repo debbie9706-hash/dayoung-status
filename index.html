@@ -259,6 +259,11 @@
             <button class="btn btn-pink" onclick="showPasswordModal()" style="max-width:200px;margin:0 auto">비밀번호 입력</button>
         </div>
         <div id="dayoungUnlocked" style="display:none">
+            <!-- 알림 등록 배너 -->
+            <div id="dayoungPushBanner" class="push-banner hidden" style="background:linear-gradient(135deg,#EC4899,#DB2777)">
+                <span class="push-banner-text">🔔 아버지 메시지 알림 받기</span>
+                <button class="push-banner-btn" style="color:#DB2777" onclick="subscribePushDayoung()">허용</button>
+            </div>
             <!-- 안읽은 메시지 표시 -->
             <div id="unreadSection" class="section" style="display:none;border:2px solid var(--danger)">
                 <div class="section-title" style="color:var(--danger)">📬 안읽은 아버지 메시지</div>
@@ -711,7 +716,7 @@ function checkPassword() {
         closePasswordModal();
         document.getElementById('dayoungLocked').style.display = 'none';
         document.getElementById('dayoungUnlocked').style.display = 'block';
-        showToast('🔓 잠금 해제!');
+        showToast('🔓 잠금 해제!');        checkDayoungPush();
     } else {
         showToast('❌ 비밀번호가 틀렸어요');
         document.getElementById('passwordInput').value = '';
@@ -720,12 +725,31 @@ function checkPassword() {
 document.getElementById('passwordInput').addEventListener('keypress', e => { if(e.key === 'Enter') checkPassword(); });
 
 async function registerSW() { if('serviceWorker' in navigator) await navigator.serviceWorker.register('./sw.js'); }
+async function checkDayoungPush() {
+    if(!("PushManager" in window)) return;
+    const reg = await navigator.serviceWorker.ready;
+    const sub = await reg.pushManager.getSubscription();
+    document.getElementById("dayoungPushBanner").classList.toggle("hidden", !!sub);
+}
+
 async function checkPush() {
     if(!('PushManager' in window)) return;
     const reg = await navigator.serviceWorker.ready;
     const sub = await reg.pushManager.getSubscription();
     document.getElementById('pushBanner').classList.toggle('hidden', !!sub);
 }
+async function subscribePushDayoung() {
+    try {
+        const perm = await Notification.requestPermission();
+        if(perm !== "granted") { showToast("알림 권한이 거부됨"); return; }
+        const reg = await navigator.serviceWorker.ready;
+        const sub = await reg.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:urlB64(VAPID_KEY)});
+        await fetch(API_URL + "/subscribe", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({subscription:sub.toJSON(), role:"dayoung"})});
+        document.getElementById("dayoungPushBanner").classList.add("hidden");
+        showToast("🔔 알림 등록 완료!");
+    } catch(e) { showToast("알림 등록 실패"); }
+}
+
 async function subscribePush() {
     try {
         const perm = await Notification.requestPermission();
