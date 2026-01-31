@@ -22,603 +22,132 @@
             --danger: #EF4444;
             --bg: linear-gradient(135deg, #F0F4FF 0%, #FCF0FF 50%, #FFF0F5 100%);
             --card: rgba(255, 255, 255, 0.85);
-            --card-solid: #FFFFFF;
             --text: #1E293B;
             --text-muted: #64748B;
             --border: rgba(99, 102, 241, 0.15);
             --shadow: 0 8px 32px rgba(99, 102, 241, 0.12);
             --shadow-sm: 0 4px 12px rgba(99, 102, 241, 0.08);
         }
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Malgun Gothic', '맑은 고딕', sans-serif;
-            background: var(--bg);
-            background-attachment: fixed;
-            min-height: 100vh;
-            color: var(--text);
-            line-height: 1.6;
-        }
-        .app {
-            max-width: 500px;
-            margin: 0 auto;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Malgun Gothic', sans-serif; background: var(--bg); background-attachment: fixed; min-height: 100vh; color: var(--text); line-height: 1.6; }
+        .app { max-width: 500px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
         
-        /* 헤더 */
-        .header {
-            text-align: center;
-            padding: 20px 16px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-            border-radius: 0 0 32px 32px;
-            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.3);
-        }
-        .header h1 {
-            font-size: 1.3rem;
-            font-weight: 700;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
+        .header { text-align: center; padding: 20px 16px; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; border-radius: 0 0 32px 32px; box-shadow: 0 8px 32px rgba(99, 102, 241, 0.3); }
+        .header h1 { font-size: 1.3rem; font-weight: 700; }
         
-        /* 탭 네비게이션 */
-        .tab-nav {
-            display: flex;
-            background: var(--card);
-            backdrop-filter: blur(20px);
-            margin: -16px 16px 0;
-            border-radius: 20px;
-            padding: 6px;
-            box-shadow: var(--shadow);
-            position: relative;
-            z-index: 100;
-        }
-        .tab-btn {
-            flex: 1;
-            padding: 12px 8px;
-            border: none;
-            background: transparent;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            cursor: pointer;
-            border-radius: 16px;
-            transition: all 0.3s ease;
-        }
-        .tab-btn.active {
-            color: white;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
-        }
+        .tab-nav { display: flex; background: var(--card); backdrop-filter: blur(20px); margin: -16px 16px 0; border-radius: 20px; padding: 6px; box-shadow: var(--shadow); position: relative; z-index: 100; }
+        .tab-btn { flex: 1; padding: 12px 8px; border: none; background: transparent; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); cursor: pointer; border-radius: 16px; transition: all 0.3s ease; }
+        .tab-btn.active { color: white; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); }
         
-        /* 탭 컨텐츠 */
-        .tab-content {
-            flex: 1;
-            display: none;
-            padding: 20px 16px;
-            overflow-y: auto;
-        }
-        .tab-content.active {
-            display: block;
-        }
+        .tab-content { flex: 1; display: none; padding: 20px 16px; overflow-y: auto; }
+        .tab-content.active { display: block; }
         
-        /* 상태 카드 */
-        .status-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-        .status-card {
-            background: var(--card);
-            backdrop-filter: blur(20px);
-            border-radius: 24px;
-            padding: 18px 14px;
-            text-align: center;
-            box-shadow: var(--shadow-sm);
-            border: 2px solid transparent;
-            transition: all 0.3s ease;
-        }
-        .status-card:active {
-            transform: scale(0.98);
-        }
-        .status-card.location-going_home { border-color: #A5F3FC; background: linear-gradient(180deg, rgba(236,254,255,0.9) 0%, rgba(255,255,255,0.9) 100%); }
-        .status-card.location-at_home { border-color: #BBF7D0; background: linear-gradient(180deg, rgba(240,253,244,0.9) 0%, rgba(255,255,255,0.9) 100%); }
-        .status-card.location-outside { border-color: #FDE68A; background: linear-gradient(180deg, rgba(255,251,235,0.9) 0%, rgba(255,255,255,0.9) 100%); }
-        .status-card.location-busy { border-color: #FECACA; background: linear-gradient(180deg, rgba(254,242,242,0.9) 0%, rgba(255,255,255,0.9) 100%); }
-        .status-card.hunger-hungry { border-color: #FBCFE8; background: linear-gradient(180deg, rgba(253,242,248,0.9) 0%, rgba(255,255,255,0.9) 100%); }
-        .status-card.hunger-not_hungry { border-color: #C7D2FE; background: linear-gradient(180deg, rgba(238,242,255,0.9) 0%, rgba(255,255,255,0.9) 100%); }
-        .status-label {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-            font-weight: 500;
-        }
-        .status-emoji {
-            font-size: 2.2rem;
-            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
-        }
-        .status-text {
-            font-size: 0.85rem;
-            font-weight: 700;
-            margin-top: 6px;
-        }
-        .status-time {
-            font-size: 0.65rem;
-            color: var(--text-muted);
-            margin-top: 4px;
-        }
+        .status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+        .status-card { background: var(--card); backdrop-filter: blur(20px); border-radius: 24px; padding: 18px 14px; text-align: center; box-shadow: var(--shadow-sm); border: 2px solid transparent; transition: all 0.3s ease; }
+        .status-card:active { transform: scale(0.98); }
+        .status-card.location-going_home { border-color: #A5F3FC; background: linear-gradient(180deg, rgba(236,254,255,0.9), rgba(255,255,255,0.9)); }
+        .status-card.location-at_home { border-color: #BBF7D0; background: linear-gradient(180deg, rgba(240,253,244,0.9), rgba(255,255,255,0.9)); }
+        .status-card.location-outside { border-color: #FDE68A; background: linear-gradient(180deg, rgba(255,251,235,0.9), rgba(255,255,255,0.9)); }
+        .status-card.location-busy { border-color: #FECACA; background: linear-gradient(180deg, rgba(254,242,242,0.9), rgba(255,255,255,0.9)); }
+        .status-card.hunger-hungry { border-color: #FBCFE8; background: linear-gradient(180deg, rgba(253,242,248,0.9), rgba(255,255,255,0.9)); }
+        .status-card.hunger-not_hungry { border-color: #C7D2FE; background: linear-gradient(180deg, rgba(238,242,255,0.9), rgba(255,255,255,0.9)); }
+        .status-label { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 6px; font-weight: 500; }
+        .status-emoji { font-size: 2.2rem; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1)); }
+        .status-text { font-size: 0.85rem; font-weight: 700; margin-top: 6px; }
+        .status-time { font-size: 0.65rem; color: var(--text-muted); margin-top: 4px; }
         
-        /* 섹션 카드 */
-        .section {
-            background: var(--card);
-            backdrop-filter: blur(20px);
-            border-radius: 24px;
-            padding: 18px;
-            margin-bottom: 16px;
-            box-shadow: var(--shadow-sm);
-        }
-        .section-title {
-            font-size: 0.95rem;
-            font-weight: 700;
-            margin-bottom: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        .section { background: var(--card); backdrop-filter: blur(20px); border-radius: 24px; padding: 18px; margin-bottom: 16px; box-shadow: var(--shadow-sm); }
+        .section-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
         
-        /* 입력 필드 */
-        .input-group {
-            margin-bottom: 12px;
-        }
-        .input-label {
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-bottom: 6px;
-            display: block;
-            color: var(--text-muted);
-        }
-        .input-field {
-            width: 100%;
-            padding: 14px 16px;
-            border: 2px solid var(--border);
-            border-radius: 16px;
-            font-size: 0.9rem;
-            font-family: inherit;
-            resize: none;
-            min-height: 56px;
-            background: rgba(255,255,255,0.8);
-            transition: all 0.3s ease;
-        }
-        .input-field:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: white;
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
-        }
+        .input-group { margin-bottom: 12px; }
+        .input-label { font-size: 0.8rem; font-weight: 600; margin-bottom: 6px; display: block; color: var(--text-muted); }
+        .input-field { width: 100%; padding: 14px 16px; border: 2px solid var(--border); border-radius: 16px; font-size: 0.9rem; font-family: inherit; resize: none; min-height: 56px; background: rgba(255,255,255,0.8); transition: all 0.3s ease; }
+        .input-field:focus { outline: none; border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1); }
         
-        /* 버튼 */
-        .btn {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 16px;
-            font-size: 0.95rem;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-        }
-        .btn:active {
-            transform: scale(0.97);
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
-        }
-        .btn-primary:hover {
-            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
-        }
-        .btn-pink {
-            background: linear-gradient(135deg, #EC4899 0%, #DB2777 100%);
-            color: white;
-            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4);
-        }
-        .btn-outline {
-            background: white;
-            border: 2px solid var(--border);
-            color: var(--text);
-        }
-        .btn-danger {
-            background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
-            color: white;
-            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
-        }
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 16px; font-size: 0.95rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s ease; }
+        .btn:active { transform: scale(0.97); }
+        .btn-primary { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); }
+        .btn-pink { background: linear-gradient(135deg, #EC4899 0%, #DB2777 100%); color: white; box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4); }
+        .btn-outline { background: white; border: 2px solid var(--border); color: var(--text); }
+        .btn-success { background: linear-gradient(135deg, var(--success) 0%, #059669 100%); color: white; }
         
-        /* 달력 */
-        .calendar {
-            background: var(--card);
-            backdrop-filter: blur(20px);
-            border-radius: 24px;
-            padding: 18px;
-            box-shadow: var(--shadow-sm);
-        }
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-        .calendar-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-        }
-        .calendar-nav {
-            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
-            border: none;
-            width: 36px;
-            height: 36px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            color: white;
-            box-shadow: var(--shadow-sm);
-            transition: all 0.2s;
-        }
-        .calendar-nav:active {
-            transform: scale(0.95);
-        }
-        .calendar-weekdays {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            text-align: center;
-            margin-bottom: 8px;
-        }
-        .calendar-weekday {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            padding: 8px 0;
-        }
-        .calendar-days {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 4px;
-        }
-        .calendar-day {
-            aspect-ratio: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            position: relative;
-            transition: all 0.2s;
-            font-weight: 500;
-        }
-        .calendar-day:hover {
-            background: rgba(99, 102, 241, 0.1);
-        }
-        .calendar-day.other-month {
-            opacity: 0.3;
-        }
-        .calendar-day.today {
-            background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);
-            font-weight: 700;
-            color: var(--primary);
-            box-shadow: inset 0 0 0 2px var(--primary);
-        }
-        .calendar-day.selected {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
-        }
-        .calendar-day.has-data::after {
-            content: '';
-            position: absolute;
-            bottom: 4px;
-            width: 6px;
-            height: 6px;
-            background: var(--secondary);
-            border-radius: 50%;
-        }
+        .calendar { background: var(--card); backdrop-filter: blur(20px); border-radius: 24px; padding: 18px; box-shadow: var(--shadow-sm); }
+        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .calendar-title { font-size: 1.1rem; font-weight: 700; }
+        .calendar-nav { background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%); border: none; width: 36px; height: 36px; border-radius: 12px; cursor: pointer; font-size: 0.9rem; color: white; box-shadow: var(--shadow-sm); }
+        .calendar-nav:active { transform: scale(0.95); }
+        .calendar-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; margin-bottom: 8px; }
+        .calendar-weekday { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); padding: 8px 0; }
+        .calendar-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+        .calendar-day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 12px; font-size: 0.85rem; cursor: pointer; position: relative; font-weight: 500; }
+        .calendar-day:hover { background: rgba(99, 102, 241, 0.1); }
+        .calendar-day.other-month { opacity: 0.3; }
+        .calendar-day.today { background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%); font-weight: 700; color: var(--primary); box-shadow: inset 0 0 0 2px var(--primary); }
+        .calendar-day.selected { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4); }
+        .calendar-day.has-data::after { content: ''; position: absolute; bottom: 4px; width: 6px; height: 6px; background: var(--secondary); border-radius: 50%; }
         
-        /* 날짜 상세 */
-        .day-detail {
-            margin-top: 16px;
-            background: var(--card);
-            backdrop-filter: blur(20px);
-            border-radius: 24px;
-            padding: 18px;
-            box-shadow: var(--shadow-sm);
-        }
-        .day-detail-title {
-            font-size: 1rem;
-            font-weight: 700;
-            margin-bottom: 14px;
-        }
-        .day-entry {
-            padding: 14px;
-            background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
-            border-radius: 16px;
-            margin-bottom: 10px;
-            font-size: 0.85rem;
-            position: relative;
-            border-left: 4px solid var(--primary);
-        }
-        .day-entry.advice { border-left-color: var(--secondary); }
-        .day-entry.memo { border-left-color: var(--success); }
-        .day-entry.calendar { border-left-color: var(--warning); }
-        .day-entry-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 6px;
-        }
-        .day-entry-time {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-        }
-        .day-entry-delete {
-            width: 28px;
-            height: 28px;
-            border: none;
-            background: rgba(239, 68, 68, 0.1);
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            color: var(--danger);
-            transition: all 0.2s;
-        }
-        .day-entry-delete:hover {
-            background: var(--danger);
-            color: white;
-        }
-        .day-entry img {
-            max-width: 100%;
-            border-radius: 12px;
-            margin-top: 8px;
-        }
+        .day-detail { margin-top: 16px; background: var(--card); backdrop-filter: blur(20px); border-radius: 24px; padding: 18px; box-shadow: var(--shadow-sm); }
+        .day-detail-title { font-size: 1rem; font-weight: 700; margin-bottom: 14px; }
         
-        /* 상태 선택 */
-        .status-selector {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 14px;
-        }
-        .status-option {
-            padding: 14px 10px;
-            border: 2px solid var(--border);
-            border-radius: 16px;
-            background: white;
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-        .status-option:active {
-            transform: scale(0.97);
-        }
-        .status-option.selected {
-            border-color: var(--primary);
-            background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%);
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
-        }
-        .status-option .emoji {
-            font-size: 1.6rem;
-            display: block;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
-        }
-        .status-option .text {
-            font-size: 0.8rem;
-            margin-top: 4px;
-            font-weight: 600;
-        }
+        /* 메시지 카드 (묶음) */
+        .message-card { background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%); border-radius: 20px; padding: 16px; margin-bottom: 12px; border: 1px solid var(--border); }
+        .message-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px dashed var(--border); }
+        .message-card-time { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
+        .message-card-status { display: flex; align-items: center; gap: 6px; }
+        .message-card-read { font-size: 0.7rem; padding: 4px 10px; border-radius: 20px; font-weight: 600; }
+        .message-card-read.read { background: #D1FAE5; color: #047857; }
+        .message-card-read.unread { background: #FEE2E2; color: #B91C1C; }
+        .message-card-delete { width: 28px; height: 28px; border: none; background: rgba(239, 68, 68, 0.1); border-radius: 8px; cursor: pointer; font-size: 0.8rem; color: var(--danger); }
+        .message-card-delete:hover { background: var(--danger); color: white; }
+        .message-card-item { display: flex; gap: 10px; margin-bottom: 10px; }
+        .message-card-item:last-child { margin-bottom: 0; }
+        .message-card-icon { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; flex-shrink: 0; }
+        .message-card-icon.message { background: #DBEAFE; }
+        .message-card-icon.advice { background: #FCE7F3; }
+        .message-card-icon.memo { background: #D1FAE5; }
+        .message-card-content { flex: 1; font-size: 0.85rem; line-height: 1.5; }
+        .message-card-label { font-size: 0.7rem; color: var(--text-muted); margin-bottom: 2px; }
         
-        /* 모달 */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(8px);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            padding: 20px;
-        }
-        .modal-overlay.active {
-            display: flex;
-        }
-        .modal {
-            background: white;
-            padding: 28px 24px;
-            border-radius: 28px;
-            width: 100%;
-            max-width: 300px;
-            text-align: center;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        }
-        .modal h3 {
-            font-size: 1.1rem;
-            margin-bottom: 20px;
-        }
-        .modal-input {
-            width: 100%;
-            padding: 16px;
-            border: 2px solid var(--border);
-            border-radius: 16px;
-            font-size: 1.5rem;
-            text-align: center;
-            letter-spacing: 12px;
-            margin-bottom: 20px;
-            font-weight: 700;
-        }
-        .modal-input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-        }
-        .modal-buttons .btn {
-            flex: 1;
-            padding: 12px;
-        }
+        /* 다영이 메시지 (단일) */
+        .dayoung-message { background: linear-gradient(135deg, #FDF2F8 0%, #FCE7F3 100%); border-radius: 16px; padding: 14px; margin-bottom: 10px; border-left: 4px solid var(--secondary); }
+        .dayoung-message-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .dayoung-message-time { font-size: 0.7rem; color: var(--text-muted); }
+        .dayoung-message-content { font-size: 0.85rem; }
         
-        /* 토스트 */
-        .toast {
-            position: fixed;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: linear-gradient(135deg, var(--text) 0%, #0F172A 100%);
-            color: white;
-            padding: 14px 28px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            z-index: 1000;
-            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-        }
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
-        }
+        .status-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+        .status-option { padding: 14px 10px; border: 2px solid var(--border); border-radius: 16px; background: white; cursor: pointer; text-align: center; transition: all 0.3s ease; }
+        .status-option:active { transform: scale(0.97); }
+        .status-option.selected { border-color: var(--primary); background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%); box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2); }
+        .status-option .emoji { font-size: 1.6rem; display: block; }
+        .status-option .text { font-size: 0.8rem; margin-top: 4px; font-weight: 600; }
         
-        /* 푸시 배너 */
-        .push-banner {
-            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
-            border-radius: 16px;
-            padding: 14px 18px;
-            margin-bottom: 16px;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
-        }
-        .push-banner.hidden {
-            display: none;
-        }
-        .push-banner-text {
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-        .push-banner-btn {
-            background: white;
-            color: var(--success);
-            border: none;
-            padding: 8px 16px;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: 0.8rem;
-            cursor: pointer;
-        }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(8px); justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
+        .modal-overlay.active { display: flex; }
+        .modal { background: white; padding: 28px 24px; border-radius: 28px; width: 100%; max-width: 300px; text-align: center; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); }
+        .modal h3 { font-size: 1.1rem; margin-bottom: 20px; }
+        .modal-input { width: 100%; padding: 16px; border: 2px solid var(--border); border-radius: 16px; font-size: 1.5rem; text-align: center; letter-spacing: 12px; margin-bottom: 20px; font-weight: 700; }
+        .modal-input:focus { outline: none; border-color: var(--primary); }
+        .modal-buttons { display: flex; gap: 10px; }
+        .modal-buttons .btn { flex: 1; padding: 12px; }
         
-        /* 메시지 그룹 */
-        .message-group {
-            background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
-            border-radius: 16px;
-            padding: 14px;
-            margin-bottom: 10px;
-        }
-        .message-group-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        .message-group-time {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-        .message-group-delete {
-            width: 26px;
-            height: 26px;
-            border: none;
-            background: rgba(239, 68, 68, 0.1);
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.75rem;
-            color: var(--danger);
-        }
-        .message-group-delete:hover {
-            background: var(--danger);
-            color: white;
-        }
-        .message-group-item {
-            font-size: 0.85rem;
-            margin-bottom: 6px;
-            padding-left: 18px;
-            position: relative;
-        }
-        .message-group-item::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 7px;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-        }
-        .message-group-item.message::before { background: var(--primary); }
-        .message-group-item.advice::before { background: var(--secondary); }
-        .message-group-item.memo::before { background: var(--success); }
-        .message-group-item:last-child { margin-bottom: 0; }
+        .toast { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%) translateY(100px); background: linear-gradient(135deg, var(--text) 0%, #0F172A 100%); color: white; padding: 14px 28px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; z-index: 1000; transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3); }
+        .toast.show { transform: translateX(-50%) translateY(0); }
         
-        /* 로딩 */
-        .loading {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 80px 20px;
-            height: 100%;
-        }
-        .loading-spinner {
-            width: 44px;
-            height: 44px;
-            border: 4px solid var(--border);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
+        .push-banner { background: linear-gradient(135deg, var(--success) 0%, #059669 100%); border-radius: 16px; padding: 14px 18px; margin-bottom: 16px; color: white; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); }
+        .push-banner.hidden { display: none; }
+        .push-banner-text { font-size: 0.85rem; font-weight: 600; }
+        .push-banner-btn { background: white; color: var(--success); border: none; padding: 8px 16px; border-radius: 10px; font-weight: 700; font-size: 0.8rem; cursor: pointer; }
+        
+        .loading { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px 20px; }
+        .loading-spinner { width: 44px; height: 44px; border: 4px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         
-        .photo-preview {
-            max-width: 100%;
-            border-radius: 16px;
-            margin: 12px 0;
-            box-shadow: var(--shadow-sm);
-        }
+        .empty-state { text-align: center; padding: 32px 16px; color: var(--text-muted); font-size: 0.85rem; }
+        .empty-state-emoji { font-size: 2.5rem; margin-bottom: 12px; opacity: 0.5; }
         
-        .empty-state {
-            text-align: center;
-            padding: 32px 16px;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-        }
-        .empty-state-emoji {
-            font-size: 2.5rem;
-            margin-bottom: 12px;
-            opacity: 0.5;
-        }
+        .photo-preview { max-width: 100%; border-radius: 16px; margin: 12px 0; box-shadow: var(--shadow-sm); }
+        
+        .unread-badge { background: var(--danger); color: white; font-size: 0.65rem; padding: 2px 8px; border-radius: 10px; margin-left: 8px; font-weight: 700; }
     </style>
 </head>
 <body>
@@ -661,7 +190,7 @@
         </div>
         
         <div class="section">
-            <div class="section-title">💬 오늘의 메시지</div>
+            <div class="section-title">💬 오늘의 메시지 <span id="unreadBadge" class="unread-badge" style="display:none"></span></div>
             <div id="todayMessages">
                 <div class="empty-state">
                     <div class="empty-state-emoji">💭</div>
@@ -671,7 +200,7 @@
         </div>
         
         <div class="section">
-            <div class="section-title">👨 아버지 메모</div>
+            <div class="section-title">👨 아버지 메모 작성</div>
             <div class="input-group">
                 <label class="input-label">💬 하고싶은 말</label>
                 <textarea id="fatherMessage" class="input-field" placeholder="다영이에게 하고싶은 말..."></textarea>
@@ -684,7 +213,7 @@
                 <label class="input-label">📝 메모</label>
                 <textarea id="fatherMemo" class="input-field" placeholder="기타 메모..."></textarea>
             </div>
-            <button class="btn btn-primary" onclick="saveFatherMemo()">💾 한번에 저장</button>
+            <button class="btn btn-primary" onclick="saveFatherMemo()">💾 저장하기</button>
         </div>
     </div>
     
@@ -707,7 +236,6 @@
             </div>
             <div class="calendar-days" id="calendarDays"></div>
         </div>
-        
         <div id="dayDetail" class="day-detail" style="display:none">
             <div class="day-detail-title" id="dayDetailTitle"></div>
             <div id="dayEntries"></div>
@@ -726,11 +254,18 @@
     <!-- 다영 탭 -->
     <div id="tab-dayoung" class="tab-content">
         <div id="dayoungLocked" style="text-align:center;padding:60px 20px">
-            <div style="font-size:4rem;margin-bottom:16px;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.1))">🔐</div>
+            <div style="font-size:4rem;margin-bottom:16px">🔐</div>
             <p style="color:var(--text-muted);margin-bottom:20px;font-size:0.9rem">다영이 전용 화면이에요</p>
             <button class="btn btn-pink" onclick="showPasswordModal()" style="max-width:200px;margin:0 auto">비밀번호 입력</button>
         </div>
         <div id="dayoungUnlocked" style="display:none">
+            <!-- 안읽은 메시지 표시 -->
+            <div id="unreadSection" class="section" style="display:none;border:2px solid var(--danger)">
+                <div class="section-title" style="color:var(--danger)">📬 안읽은 아버지 메시지</div>
+                <div id="unreadMessages"></div>
+                <button class="btn btn-success" onclick="markAllRead()" style="margin-top:12px">✓ 모두 읽음 표시</button>
+            </div>
+            
             <div class="section">
                 <div class="section-title">👧 내 상태 변경</div>
                 <div class="input-label">📍 지금 어디에 있어요?</div>
@@ -776,16 +311,8 @@ const DAYOUNG_PW='2428';
 let currentData={}, selectedDate=null, currentMonth=new Date();
 let selectedLocation=null, selectedHunger=null, photoData=null;
 
-const locMap = {
-    going_home: {e:'🚶', t:'집에 가는 중'},
-    at_home: {e:'🏠', t:'집 도착!'},
-    outside: {e:'🌙', t:'밖에 있어요'},
-    busy: {e:'💼', t:'바빠요'}
-};
-const hunMap = {
-    not_hungry: {e:'😊', t:'안 고파요'},
-    hungry: {e:'🍽️', t:'배고파요'}
-};
+const locMap = {going_home:{e:'🚶',t:'집에 가는 중'},at_home:{e:'🏠',t:'집 도착!'},outside:{e:'🌙',t:'밖에 있어요'},busy:{e:'💼',t:'바빠요'}};
+const hunMap = {not_hungry:{e:'😊',t:'안 고파요'},hungry:{e:'🍽️',t:'배고파요'}};
 
 document.addEventListener('DOMContentLoaded', () => {
     initTabs();
@@ -850,6 +377,7 @@ function updateDisplay() {
     if(currentData.hungerUpdated) document.getElementById('hungerTime').textContent = formatTime(currentData.hungerUpdated);
     
     displayTodayMessages();
+    displayUnreadMessages();
     renderCalendar();
 }
 
@@ -860,38 +388,160 @@ function displayTodayMessages() {
     
     if(!msgs.length) {
         container.innerHTML = '<div class="empty-state"><div class="empty-state-emoji">💭</div><p>오늘의 메시지가 없어요</p></div>';
+        document.getElementById('unreadBadge').style.display = 'none';
         return;
     }
     
-    let html = '';
-    msgs.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach(m => {
-        const time = m.timestamp.substring(11, 16);
-        const icon = m.sender === 'dad' ? '👨' : '👧';
-        html += `<div class="message-group">
-            <div class="message-group-header">
-                <span class="message-group-time">${time} ${icon}</span>
-                <button class="message-group-delete" onclick="deleteMessage('${m.id}')">🗑️</button>
-            </div>
-            <div class="message-group-item ${m.type}">${m.content}</div>
-        </div>`;
+    // 시간별로 그룹화 (같은 분에 저장된 아버지 메시지는 묶음)
+    const grouped = {};
+    msgs.forEach(m => {
+        const timeKey = m.timestamp.substring(0, 16); // YYYY-MM-DDTHH:MM
+        const key = m.sender + '_' + timeKey;
+        if(!grouped[key]) grouped[key] = { sender: m.sender, time: timeKey, items: [], ids: [], read: true };
+        grouped[key].items.push(m);
+        grouped[key].ids.push(m.id);
+        if(m.sender === 'dad' && !m.read) grouped[key].read = false;
     });
+    
+    // 안읽은 메시지 카운트
+    const unreadCount = Object.values(grouped).filter(g => g.sender === 'dad' && !g.read).length;
+    const badge = document.getElementById('unreadBadge');
+    if(unreadCount > 0) {
+        badge.textContent = unreadCount + '개 안읽음';
+        badge.style.display = 'inline';
+    } else {
+        badge.style.display = 'none';
+    }
+    
+    let html = '';
+    Object.values(grouped).sort((a,b) => new Date(b.time) - new Date(a.time)).forEach(g => {
+        const time = g.time.substring(11, 16);
+        
+        if(g.sender === 'dad') {
+            // 아버지 메시지 카드 (묶음)
+            html += `<div class="message-card">
+                <div class="message-card-header">
+                    <span class="message-card-time">👨 ${time}</span>
+                    <div class="message-card-status">
+                        <span class="message-card-read ${g.read ? 'read' : 'unread'}">${g.read ? '✓ 읽음' : '안읽음'}</span>
+                        <button class="message-card-delete" onclick="deleteMessages('${g.ids.join(',')}')">🗑️</button>
+                    </div>
+                </div>`;
+            
+            g.items.forEach(item => {
+                const iconClass = item.type || 'message';
+                const icons = {message: '💬', advice: '❤️', memo: '📝'};
+                const labels = {message: '하고싶은 말', advice: '당부', memo: '메모'};
+                html += `<div class="message-card-item">
+                    <div class="message-card-icon ${iconClass}">${icons[iconClass] || '💬'}</div>
+                    <div class="message-card-content">
+                        <div class="message-card-label">${labels[iconClass] || '메시지'}</div>
+                        ${item.content}
+                    </div>
+                </div>`;
+            });
+            html += `</div>`;
+        } else {
+            // 다영이 메시지
+            g.items.forEach(item => {
+                html += `<div class="dayoung-message">
+                    <div class="dayoung-message-header">
+                        <span class="dayoung-message-time">👧 ${time}</span>
+                        <button class="message-card-delete" onclick="deleteMessage('${item.id}')">🗑️</button>
+                    </div>
+                    <div class="dayoung-message-content">${item.content}</div>
+                </div>`;
+            });
+        }
+    });
+    
     container.innerHTML = html;
 }
 
-async function deleteMessage(id) {
-    if(!confirm('이 메시지를 삭제할까요?')) return;
+function displayUnreadMessages() {
+    const section = document.getElementById('unreadSection');
+    const container = document.getElementById('unreadMessages');
+    const unread = (currentData.messages || []).filter(m => m.sender === 'dad' && !m.read);
+    
+    if(!unread.length) {
+        section.style.display = 'none';
+        return;
+    }
+    
+    section.style.display = 'block';
+    
+    // 시간별 그룹화
+    const grouped = {};
+    unread.forEach(m => {
+        const timeKey = m.timestamp.substring(0, 16);
+        if(!grouped[timeKey]) grouped[timeKey] = [];
+        grouped[timeKey].push(m);
+    });
+    
+    let html = '';
+    Object.keys(grouped).sort().reverse().forEach(timeKey => {
+        const time = timeKey.substring(11, 16);
+        const date = timeKey.substring(5, 10).replace('-', '/');
+        html += `<div class="message-card" style="border:1px solid var(--danger)">
+            <div class="message-card-header">
+                <span class="message-card-time">👨 ${date} ${time}</span>
+            </div>`;
+        grouped[timeKey].forEach(item => {
+            const icons = {message: '💬', advice: '❤️', memo: '📝'};
+            const labels = {message: '하고싶은 말', advice: '당부', memo: '메모'};
+            html += `<div class="message-card-item">
+                <div class="message-card-icon ${item.type}">${icons[item.type] || '💬'}</div>
+                <div class="message-card-content">
+                    <div class="message-card-label">${labels[item.type] || '메시지'}</div>
+                    ${item.content}
+                </div>
+            </div>`;
+        });
+        html += '</div>';
+    });
+    
+    container.innerHTML = html;
+}
+
+async function markAllRead() {
+    const unreadIds = (currentData.messages || []).filter(m => m.sender === 'dad' && !m.read).map(m => m.id);
+    if(!unreadIds.length) return;
+    
     try {
         const res = await fetch(API_URL, {
-            method: 'DELETE',
+            method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({messageId: id})
+            body: JSON.stringify({ markRead: unreadIds })
         });
         currentData = await res.json();
         updateDisplay();
-        showToast('🗑️ 삭제 완료');
+        showToast('✓ 모두 읽음 표시 완료');
     } catch(e) {
-        showToast('❌ 삭제 실패');
+        showToast('❌ 실패');
     }
+}
+
+async function deleteMessage(id) {
+    if(!confirm('삭제할까요?')) return;
+    try {
+        const res = await fetch(API_URL, {method:'DELETE', headers:{'Content-Type':'application/json'}, body:JSON.stringify({messageId:id})});
+        currentData = await res.json();
+        updateDisplay();
+        showToast('🗑️ 삭제 완료');
+    } catch(e) { showToast('❌ 삭제 실패'); }
+}
+
+async function deleteMessages(ids) {
+    if(!confirm('이 메시지들을 삭제할까요?')) return;
+    try {
+        for(const id of ids.split(',')) {
+            await fetch(API_URL, {method:'DELETE', headers:{'Content-Type':'application/json'}, body:JSON.stringify({messageId:id})});
+        }
+        const res = await fetch(API_URL);
+        currentData = await res.json();
+        updateDisplay();
+        showToast('🗑️ 삭제 완료');
+    } catch(e) { showToast('❌ 삭제 실패'); }
 }
 
 async function saveFatherMemo() {
@@ -936,16 +586,11 @@ async function saveDayoungStatus() {
 function renderCalendar() {
     const year = currentMonth.getFullYear(), month = currentMonth.getMonth();
     document.getElementById('calendarTitle').textContent = `${year}년 ${month + 1}월`;
-    
     const firstDay = new Date(year, month, 1).getDay();
     const lastDate = new Date(year, month + 1, 0).getDate();
-    const today = new Date();
-    const todayStr = today.toISOString().split('T')[0];
-    
+    const todayStr = new Date().toISOString().split('T')[0];
     const datesWithData = new Set();
-    (currentData.messages || []).forEach(m => {
-        if(m.timestamp) datesWithData.add(m.timestamp.split('T')[0]);
-    });
+    (currentData.messages || []).forEach(m => { if(m.timestamp) datesWithData.add(m.timestamp.split('T')[0]); });
     
     let html = '';
     for(let i = 0; i < firstDay; i++) {
@@ -962,16 +607,9 @@ function renderCalendar() {
     document.getElementById('calendarDays').innerHTML = html;
 }
 
-function changeMonth(delta) {
-    currentMonth.setMonth(currentMonth.getMonth() + delta);
-    renderCalendar();
-}
+function changeMonth(delta) { currentMonth.setMonth(currentMonth.getMonth() + delta); renderCalendar(); }
 
-function selectDate(dateStr) {
-    selectedDate = dateStr;
-    renderCalendar();
-    showDayDetail(dateStr);
-}
+function selectDate(dateStr) { selectedDate = dateStr; renderCalendar(); showDayDetail(dateStr); }
 
 function showDayDetail(dateStr) {
     const [y, m, d] = dateStr.split('-');
@@ -984,19 +622,47 @@ function showDayDetail(dateStr) {
     if(!entries.length) {
         container.innerHTML = '<div class="empty-state"><div class="empty-state-emoji">📝</div><p>이 날의 기록이 없어요</p></div>';
     } else {
-        container.innerHTML = entries.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp)).map(e => {
-            const time = e.timestamp.substring(11, 16);
-            const icon = e.sender === 'dad' ? '👨' : '👧';
-            let content = `<div class="day-entry ${e.type}">
-                <div class="day-entry-header">
-                    <span class="day-entry-time">${time} ${icon}</span>
-                    <button class="day-entry-delete" onclick="deleteMessage('${e.id}')">🗑️</button>
-                </div>
-                <div>${e.content}</div>`;
-            if(e.photo) content += `<img src="${e.photo}">`;
-            content += '</div>';
-            return content;
-        }).join('');
+        // 시간별 그룹화
+        const grouped = {};
+        entries.forEach(m => {
+            const timeKey = m.timestamp.substring(0, 16);
+            const key = m.sender + '_' + timeKey;
+            if(!grouped[key]) grouped[key] = { sender: m.sender, time: timeKey, items: [], ids: [] };
+            grouped[key].items.push(m);
+            grouped[key].ids.push(m.id);
+        });
+        
+        let html = '';
+        Object.values(grouped).sort((a,b) => new Date(b.time) - new Date(a.time)).forEach(g => {
+            const time = g.time.substring(11, 16);
+            if(g.sender === 'dad') {
+                html += `<div class="message-card">
+                    <div class="message-card-header">
+                        <span class="message-card-time">👨 ${time}</span>
+                        <button class="message-card-delete" onclick="deleteMessages('${g.ids.join(',')}')">🗑️</button>
+                    </div>`;
+                g.items.forEach(item => {
+                    const icons = {message:'💬', advice:'❤️', memo:'📝', calendar:'📅'};
+                    html += `<div class="message-card-item">
+                        <div class="message-card-icon ${item.type}">${icons[item.type]||'💬'}</div>
+                        <div class="message-card-content">${item.content}</div>
+                    </div>`;
+                    if(item.photo) html += `<img src="${item.photo}" style="max-width:100%;border-radius:12px;margin-top:8px">`;
+                });
+                html += '</div>';
+            } else {
+                g.items.forEach(item => {
+                    html += `<div class="dayoung-message">
+                        <div class="dayoung-message-header">
+                            <span class="dayoung-message-time">👧 ${time}</span>
+                            <button class="message-card-delete" onclick="deleteMessage('${item.id}')">🗑️</button>
+                        </div>
+                        <div class="dayoung-message-content">${item.content}</div>
+                    </div>`;
+                });
+            }
+        });
+        container.innerHTML = html;
     }
     
     document.getElementById('calendarMemo').value = '';
@@ -1034,7 +700,6 @@ async function saveCalendarEntry() {
     } catch(e) { showToast('❌ 저장 실패'); }
 }
 
-// 비밀번호
 function showPasswordModal() {
     document.getElementById('passwordModal').classList.add('active');
     document.getElementById('passwordInput').value = '';
@@ -1054,7 +719,6 @@ function checkPassword() {
 }
 document.getElementById('passwordInput').addEventListener('keypress', e => { if(e.key === 'Enter') checkPassword(); });
 
-// Push
 async function registerSW() { if('serviceWorker' in navigator) await navigator.serviceWorker.register('./sw.js'); }
 async function checkPush() {
     if(!('PushManager' in window)) return;
@@ -1077,8 +741,7 @@ function urlB64(b64) { const p='='.repeat((4-b64.length%4)%4); const b=(b64+p).r
 
 function formatTime(ts) {
     const d = new Date(ts);
-    const h = d.getHours(), m = d.getMinutes();
-    return `${h < 12 ? '오전' : '오후'} ${h % 12 || 12}:${String(m).padStart(2, '0')}`;
+    return `${d.getHours() < 12 ? '오전' : '오후'} ${d.getHours() % 12 || 12}:${String(d.getMinutes()).padStart(2, '0')}`;
 }
 function showToast(msg) {
     const t = document.getElementById('toast');
