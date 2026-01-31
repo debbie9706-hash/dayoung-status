@@ -828,7 +828,7 @@ async function fetchData() {
     try {
         const res = await fetch(API_URL);
         currentData = await res.json();
-        document.getElementById('loading').classList.remove('active');
+        document.getElementById('loading').style.display = 'none';
         document.getElementById('tab-home').classList.add('active');
         updateDisplay();
     } catch(e) {
