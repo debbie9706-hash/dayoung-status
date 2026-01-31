@@ -84,6 +84,12 @@
             font-weight: 700;
         }
 
+        .last-update-date {
+            font-size: 0.95em;
+            opacity: 0.95;
+            margin-top: 2px;
+        }
+
         .last-update-ago {
             font-size: 0.95em;
             opacity: 0.9;
@@ -191,9 +197,118 @@
             margin-top: 8px;
         }
 
+        /* 메시지 히스토리 */
+        .message-history {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #FFE8B6;
+        }
+
+        .message-item {
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #F5E6D3;
+        }
+
+        .message-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .message-sender {
+            font-size: 0.85em;
+            font-weight: 600;
+            color: #2D3436;
+            margin-bottom: 4px;
+        }
+
+        .message-sender.dad {
+            color: #E17055;
+        }
+
+        .message-sender.dayoung {
+            color: #6C5CE7;
+        }
+
+        .message-content {
+            font-size: 0.95em;
+            color: #2D3436;
+            line-height: 1.4;
+            word-break: keep-all;
+        }
+
+        .message-time {
+            font-size: 0.75em;
+            color: #B2BEC3;
+            margin-top: 4px;
+        }
+
         .dad-message-empty {
             color: #B2BEC3;
             font-style: italic;
+        }
+
+        /* 알람 설정 */
+        .notification-settings {
+            background: #F0F8FF;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border: 2px solid #B3E5FC;
+        }
+
+        .notification-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .notification-toggle label {
+            font-size: 0.95em;
+            font-weight: 600;
+            color: #2D3436;
+            cursor: pointer;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 28px;
+            background: #CCC;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-switch.on {
+            background: #4DD0E1;
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: left 0.3s;
+        }
+
+        .toggle-switch.on::after {
+            left: 24px;
+        }
+
+        .notification-status {
+            font-size: 0.85em;
+            color: #636E72;
         }
 
         .dad-input-area {
@@ -672,6 +787,7 @@
             <div class="last-update-banner">
                 <div class="last-update-label">마지막으로 알려준 시각</div>
                 <div id="lastUpdateTime" class="last-update-time">--:--</div>
+                <div id="lastUpdateDate" class="last-update-date">--년 --월 --일</div>
                 <div id="lastUpdateAgo" class="last-update-ago"></div>
             </div>
 
@@ -689,20 +805,32 @@
                 <div id="hungerText" class="status-text">오늘은 배가 안 고파요</div>
             </div>
 
-            <!-- 아버지 메시지 섹션 (비밀번호 없이 사용 가능) -->
+            <!-- 메시지 섹션 (쌍방향) -->
             <div class="dad-section">
                 <div class="dad-section-title">
-                    <span>👨‍👧</span>
-                    <span>아버지 → 다영</span>
+                    <span>💬</span>
+                    <span>메시지</span>
                 </div>
-                <div class="dad-message-display">
-                    <div id="dadMessageText" class="dad-message-text dad-message-empty">
-                        아직 메시지가 없어요
+                
+                <!-- 알람 설정 -->
+                <div class="notification-settings">
+                    <div class="notification-toggle">
+                        <label for="notificationToggle">새 메시지 알림</label>
+                        <div id="notificationToggle" class="toggle-switch" role="checkbox" aria-checked="false"></div>
                     </div>
-                    <div id="dadMessageTime" class="dad-message-time" style="display: none;"></div>
+                    <div class="notification-status" id="notificationStatus">알림이 꺼져있습니다</div>
                 </div>
+
+                <!-- 메시지 히스토리 -->
+                <div id="messageHistory" class="message-history">
+                    <div style="text-align: center; color: #B2BEC3; padding: 20px 10px; font-size: 0.95em;">
+                        아직 대화가 없어요
+                    </div>
+                </div>
+
+                <!-- 메시지 입력 -->
                 <div class="dad-input-area">
-                    <textarea id="dadInput" class="dad-input" placeholder="오늘 저녁 메뉴나 하고 싶은 말을 적어주세요... 예) 오늘 저녁은 된장찌개야~"></textarea>
+                    <textarea id="dadInput" class="dad-input" placeholder="메시지를 입력해주세요..."></textarea>
                     <button id="dadSendBtn" class="dad-send-btn">
                         <span>✉️</span>
                         <span>메시지 보내기</span>
@@ -843,6 +971,8 @@
         let selectedHunger = null;
         let deferredPrompt = null;
         let lastUpdateTimestamp = null;
+        let notificationEnabled = localStorage.getItem('notificationEnabled') === 'true';
+        let lastCheckTime = 0;
 
         // 상태 매핑 (집도착 추가)
         const locationMap = {
@@ -982,6 +1112,39 @@
                     checkPassword();
                 }
             });
+
+            // 알람 토글
+            const notificationToggle = document.getElementById('notificationToggle');
+            const notificationStatus = document.getElementById('notificationStatus');
+            
+            // 초기 상태 설정
+            if (notificationEnabled) {
+                notificationToggle.classList.add('on');
+                notificationToggle.setAttribute('aria-checked', 'true');
+                notificationStatus.textContent = '✅ 알림이 켜져있습니다';
+            }
+
+            notificationToggle.addEventListener('click', () => {
+                notificationEnabled = !notificationEnabled;
+                localStorage.setItem('notificationEnabled', notificationEnabled);
+                
+                if (notificationEnabled) {
+                    notificationToggle.classList.add('on');
+                    notificationToggle.setAttribute('aria-checked', 'true');
+                    notificationStatus.textContent = '✅ 알림이 켜져있습니다';
+                    showToast('🔔 메시지 알림이 활성화되었습니다!');
+                    
+                    // Notification 권한 요청
+                    if ('Notification' in window && Notification.permission === 'default') {
+                        Notification.requestPermission();
+                    }
+                } else {
+                    notificationToggle.classList.remove('on');
+                    notificationToggle.setAttribute('aria-checked', 'false');
+                    notificationStatus.textContent = '알림이 꺼져있습니다';
+                    showToast('🔕 메시지 알림이 비활성화되었습니다');
+                }
+            });
         }
 
         // 아버지 메시지 전송
@@ -1007,9 +1170,60 @@
                 updateDisplay(data);
                 input.value = '';
                 showToast('✅ 메시지 전송 완료!');
+                
+                // 메시지 히스토리에 추가
+                addMessageToHistory('dad', message, new Date());
             } catch (error) {
                 console.error('메시지 전송 실패:', error);
                 showToast('❌ 전송 실패. 다시 시도해주세요.');
+            }
+        }
+
+        // 메시지를 히스토리에 추가
+        function addMessageToHistory(sender, message, time) {
+            const history = document.getElementById('messageHistory');
+            
+            // 빈 상태 메시지 제거
+            const emptyMessage = history.querySelector('div[style*="text-align: center"]');
+            if (emptyMessage) {
+                emptyMessage.remove();
+            }
+
+            const messageItem = document.createElement('div');
+            messageItem.className = 'message-item';
+            
+            const senderName = sender === 'dad' ? '👨 아버지' : '👧 다영';
+            const senderClass = sender === 'dad' ? 'dad' : 'dayoung';
+
+            messageItem.innerHTML = `
+                <div class="message-sender ${senderClass}">${senderName}</div>
+                <div class="message-content">${escapeHtml(message)}</div>
+                <div class="message-time">${formatTime(time)} · ${formatTimeAgo(time)}</div>
+            `;
+
+            history.appendChild(messageItem);
+            
+            // 스크롤을 아래로
+            history.scrollTop = history.scrollHeight;
+        }
+
+        // HTML 특수문자 이스케이프
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // 알림 표시
+        function sendNotification(title, options = {}) {
+            if (!notificationEnabled) return;
+            
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification(title, {
+                    icon: 'icon-192.png',
+                    tag: 'dayoung-status',
+                    ...options
+                });
             }
         }
 
@@ -1045,6 +1259,7 @@
             if (latestTime) {
                 lastUpdateTimestamp = latestTime;
                 document.getElementById('lastUpdateTime').textContent = formatTime(latestTime);
+                document.getElementById('lastUpdateDate').textContent = formatDate(latestTime);
                 document.getElementById('lastUpdateAgo').textContent = formatTimeAgo(latestTime);
             }
 
@@ -1073,18 +1288,33 @@
                     const msgTime = new Date(data.dadMessageUpdated);
                     dadMessageTime.textContent = formatTime(msgTime) + ' · ' + formatTimeAgo(msgTime);
                     dadMessageTime.style.display = 'block';
+                    
+                    // 메시지 히스토리에 아버지 메시지 추가
+                    addMessageToHistory('dad', data.dadMessage, msgTime);
+                    
+                    // 새로운 메시지면 알람 표시
+                    if (lastCheckTime < msgTime.getTime()) {
+                        sendNotification('💬 아버지가 메시지를 보냈어요!', {
+                            body: data.dadMessage.substring(0, 50) + (data.dadMessage.length > 50 ? '...' : '')
+                        });
+                        lastCheckTime = msgTime.getTime();
+                    }
                 }
                 
                 // 관리자 패널에도 표시
-                adminDadMessage.textContent = data.dadMessage;
-                adminDadMessage.classList.remove('admin-dad-message-empty');
+                if (adminDadMessage) {
+                    adminDadMessage.textContent = data.dadMessage;
+                    adminDadMessage.classList.remove('admin-dad-message-empty');
+                }
             } else {
-                dadMessageText.textContent = '아직 메시지가 없어요';
+                dadMessageText.textContent = '아직 대화가 없어요';
                 dadMessageText.classList.add('dad-message-empty');
                 dadMessageTime.style.display = 'none';
                 
-                adminDadMessage.textContent = '아직 메시지가 없어요';
-                adminDadMessage.classList.add('admin-dad-message-empty');
+                if (adminDadMessage) {
+                    adminDadMessage.textContent = '아직 대화가 없어요';
+                    adminDadMessage.classList.add('admin-dad-message-empty');
+                }
             }
 
             // 관리자 모드에서 현재 상태 선택 표시
@@ -1139,6 +1369,15 @@
                 hour: 'numeric',
                 minute: '2-digit',
                 hour12: true
+            });
+        }
+
+        // 날짜 포맷 (2025년 1월 31일)
+        function formatDate(date) {
+            return date.toLocaleDateString('ko-KR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
             });
         }
 
