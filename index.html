@@ -30,12 +30,13 @@
         .install-btn:active{transform:scale(0.98)}
         .install-later{padding:12px 16px;background:rgba(255,255,255,0.15);color:white;border:none;border-radius:12px;font-size:0.9rem;cursor:pointer}
         .update-banner{background:var(--card);border-radius:16px;padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow)}
-        .update-indicator{width:10px;height:10px;background:var(--success);border-radius:50%;animation:pulse 2s infinite}
+        .update-indicator{width:10px;height:10px;background:var(--success);border-radius:50%;animation:pulse 2s infinite;flex-shrink:0}
         @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
         .update-info{flex:1}
         .update-label{font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px}
-        .update-time{font-size:1.1rem;font-weight:600}
-        .update-ago{font-size:0.85rem;color:var(--text-muted)}
+        .update-time{font-size:1rem;font-weight:600}
+        .update-date{font-size:0.85rem;color:var(--text-muted);margin-top:2px}
+        .update-ago{font-size:0.8rem;color:var(--primary);font-weight:500}
         .status-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
         .status-card{background:var(--card);border-radius:20px;padding:20px 16px;text-align:center;box-shadow:var(--shadow);border:2px solid transparent}
         .status-card.location-going_home{border-color:#A5F3FC;background:linear-gradient(180deg,#ECFEFF 0%,white 100%)}
@@ -48,9 +49,12 @@
         .status-emoji{font-size:2.8rem;margin-bottom:8px;line-height:1}
         .status-text{font-size:0.95rem;font-weight:600;word-break:keep-all}
         .section{background:var(--card);border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:var(--shadow)}
-        .section-header{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+        .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+        .section-header-left{display:flex;align-items:center;gap:10px}
         .section-icon{width:36px;height:36px;background:linear-gradient(135deg,#FBBF24 0%,#F59E0B 100%);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
         .section-title{font-size:1rem;font-weight:600}
+        .admin-badge{padding:4px 10px;background:var(--danger);color:white;border-radius:20px;font-size:0.7rem;font-weight:600;display:none}
+        .admin-badge.active{display:inline-block}
         .mood-display{display:flex;align-items:center;gap:12px;padding:14px 16px;background:#FFFBEB;border-radius:14px;margin-bottom:16px}
         .mood-emoji{font-size:2rem}
         .mood-info{flex:1}
@@ -67,6 +71,7 @@
         .btn{width:100%;padding:16px;border:none;border-radius:14px;font-size:1rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
         .btn:active{transform:scale(0.98)}
         .btn-secondary{background:var(--text);color:white}
+        .btn-admin{background:var(--danger);color:white;margin-top:10px}
         .notification-row{display:flex;align-items:center;justify-content:space-between;padding:16px;background:#F1F5F9;border-radius:14px;margin-bottom:14px}
         .notification-info{display:flex;align-items:center;gap:10px}
         .notification-label{font-size:0.9rem;font-weight:500}
@@ -74,10 +79,20 @@
         .toggle.on{background:var(--success)}
         .toggle::after{content:'';position:absolute;width:22px;height:22px;background:white;border-radius:50%;top:3px;left:3px;transition:left 0.3s;box-shadow:0 2px 4px rgba(0,0,0,0.2)}
         .toggle.on::after{left:27px}
-        .message-list{max-height:300px;overflow-y:auto;-webkit-overflow-scrolling:touch}
+        /* 메시지 히스토리 - 날짜별 그룹화 */
+        .message-section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+        .message-section-title{font-size:0.9rem;font-weight:600;color:var(--text)}
+        .message-list{max-height:400px;overflow-y:auto;-webkit-overflow-scrolling:touch}
         .message-empty{text-align:center;padding:32px 16px;color:var(--text-muted);font-size:0.9rem}
-        .message-item{padding:14px;background:#F8FAFC;border-radius:14px;margin-bottom:10px}
+        .date-group{margin-bottom:16px}
+        .date-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;padding:8px 12px;background:linear-gradient(90deg,#EEF2FF 0%,transparent 100%);border-radius:8px}
+        .date-header-icon{font-size:0.9rem}
+        .date-header-text{font-size:0.85rem;font-weight:600;color:var(--primary)}
+        .date-header-count{font-size:0.75rem;color:var(--text-muted);margin-left:auto}
+        .message-item{padding:14px;background:#F8FAFC;border-radius:14px;margin-bottom:8px;border-left:3px solid var(--primary)}
         .message-item:last-child{margin-bottom:0}
+        .message-item.advice{border-left-color:var(--secondary)}
+        .message-item.memo{border-left-color:var(--success)}
         .message-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
         .message-meta{display:flex;align-items:center;gap:8px}
         .message-badge{padding:3px 8px;border-radius:6px;font-size:0.7rem;font-weight:600}
@@ -96,6 +111,7 @@
         @keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
         .settings-btn{position:fixed;bottom:24px;left:24px;width:48px;height:48px;background:white;border:none;border-radius:50%;color:var(--text-muted);font-size:20px;cursor:pointer;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;opacity:0.7;z-index:100}
         .settings-btn:hover{opacity:1}
+        .settings-btn.admin-active{background:var(--danger);color:white;opacity:1}
         .loading{text-align:center;padding:60px 20px}
         .loading-spinner{width:48px;height:48px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px}
         .loading-text{color:var(--text-muted);font-size:0.95rem}
@@ -150,8 +166,10 @@
                 <div class="update-indicator"></div>
                 <div class="update-info">
                     <div class="update-label">마지막 업데이트</div>
-                    <div class="update-time"><span id="lastUpdateTime">--:--</span> <span id="lastUpdateAgo" class="update-ago"></span></div>
+                    <div class="update-time" id="lastUpdateTime">--:--</div>
+                    <div class="update-date" id="lastUpdateDate">----년 --월 --일</div>
                 </div>
+                <div class="update-ago" id="lastUpdateAgo"></div>
             </div>
             <div class="status-grid">
                 <div id="locationCard" class="status-card location-going_home">
@@ -167,8 +185,11 @@
             </div>
             <div class="section">
                 <div class="section-header">
-                    <div class="section-icon">👨</div>
-                    <div class="section-title">아버지</div>
+                    <div class="section-header-left">
+                        <div class="section-icon">👨</div>
+                        <div class="section-title">아버지</div>
+                    </div>
+                    <span id="adminBadge" class="admin-badge">관리자</span>
                 </div>
                 <div class="mood-display">
                     <div class="mood-emoji" id="fatherMoodDisplay">😐</div>
@@ -196,10 +217,16 @@
                     <label class="input-label">📝 기타 메모</label>
                     <textarea id="fatherMemoInput" class="input-field" placeholder="기타 사항 메모..."></textarea>
                 </div>
-                <button id="fatherSaveBtn" class="btn btn-secondary" style="margin-bottom:16px;"><span>💾</span><span>저장하기</span></button>
-                <div class="notification-row">
-                    <div class="notification-info"><span>🔔</span><span class="notification-label">새 메시지 알림</span></div>
-                    <div id="notificationToggle" class="toggle"></div>
+                <button id="fatherSaveBtn" class="btn btn-secondary"><span>💾</span><span>저장하기</span></button>
+                <button id="adminLoginBtn" class="btn btn-admin"><span>🔐</span><span>관리자 로그인</span></button>
+                <div style="margin-top:16px">
+                    <div class="notification-row">
+                        <div class="notification-info"><span>🔔</span><span class="notification-label">새 메시지 알림</span></div>
+                        <div id="notificationToggle" class="toggle"></div>
+                    </div>
+                </div>
+                <div class="message-section-header">
+                    <div class="message-section-title">📋 메시지 기록</div>
                 </div>
                 <div id="messageHistory" class="message-list"><div class="message-empty">아직 메시지가 없어요</div></div>
             </div>
@@ -209,7 +236,7 @@
     <button id="modeToggle" class="settings-btn">⚙️</button>
     <div id="passwordModal" class="modal-overlay">
         <div class="modal">
-            <h3>🔐 비밀번호</h3>
+            <h3>🔐 관리자 비밀번호</h3>
             <input type="password" id="passwordInput" placeholder="비밀번호 입력">
             <div class="modal-btns">
                 <button class="modal-btn cancel" onclick="closeModal()">취소</button>
@@ -242,10 +269,7 @@
             const isInStandaloneMode = ('standalone' in window.navigator) && window.navigator.standalone;
             const isInstalled = isAppInstalled();
             const bannerDismissed = localStorage.getItem('installBannerDismissed');
-            
-            if (isInstalled || isInStandaloneMode) return;
-            if (bannerDismissed) return;
-            
+            if (isInstalled || isInStandaloneMode || bannerDismissed) return;
             if (isIOS) {
                 document.getElementById('iosInstallBanner').style.display = 'block';
                 document.getElementById('closeIosBannerBtn').addEventListener('click', () => {
@@ -253,29 +277,21 @@
                     localStorage.setItem('installBannerDismissed', 'true');
                 });
             }
-            
             window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                deferredPrompt = e;
-                if (!bannerDismissed && !isInstalled) {
-                    document.getElementById('installBanner').style.display = 'block';
-                }
+                e.preventDefault(); deferredPrompt = e;
+                if (!bannerDismissed && !isInstalled) document.getElementById('installBanner').style.display = 'block';
             });
-
             document.getElementById('installBtn').addEventListener('click', async () => {
                 if (!deferredPrompt) { showToast('Chrome 브라우저에서 사용하세요'); return; }
                 deferredPrompt.prompt();
                 const { outcome } = await deferredPrompt.userChoice;
                 if (outcome === 'accepted') { showToast('앱 설치 완료! 🎉'); localStorage.setItem('installBannerDismissed', 'true'); }
-                deferredPrompt = null;
-                document.getElementById('installBanner').style.display = 'none';
+                deferredPrompt = null; document.getElementById('installBanner').style.display = 'none';
             });
-
             document.getElementById('closeBannerBtn').addEventListener('click', () => {
                 document.getElementById('installBanner').style.display = 'none';
                 localStorage.setItem('installBannerDismissed', 'true');
             });
-
             window.addEventListener('appinstalled', () => {
                 showToast('앱이 설치되었습니다! 🎉');
                 document.getElementById('installBanner').style.display = 'none';
@@ -285,7 +301,22 @@
 
         function isAppInstalled() { return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true; }
         function registerServiceWorker() { if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW 등록 실패:', err)); }
-        function updateTimeAgo() { if (lastUpdateTimestamp) document.getElementById('lastUpdateAgo').textContent = '· ' + formatTimeAgo(lastUpdateTimestamp); }
+        function updateTimeAgo() { if (lastUpdateTimestamp) document.getElementById('lastUpdateAgo').textContent = formatTimeAgo(lastUpdateTimestamp); }
+
+        function updateAdminUI() {
+            const badge = document.getElementById('adminBadge');
+            const settingsBtn = document.getElementById('modeToggle');
+            const adminLoginBtn = document.getElementById('adminLoginBtn');
+            if (isAdminMode) {
+                badge.classList.add('active');
+                settingsBtn.classList.add('admin-active');
+                adminLoginBtn.innerHTML = '<span>🔓</span><span>관리자 로그아웃</span>';
+            } else {
+                badge.classList.remove('active');
+                settingsBtn.classList.remove('admin-active');
+                adminLoginBtn.innerHTML = '<span>🔐</span><span>관리자 로그인</span>';
+            }
+        }
 
         function setupEventListeners() {
             document.querySelectorAll('.mood-btn').forEach(btn => {
@@ -301,9 +332,27 @@
                 btn.classList.add('spinning');
                 fetchStatus().then(() => { btn.classList.remove('spinning'); showToast('✅ 업데이트 완료!'); });
             });
+            // 관리자 버튼 (명시적)
+            document.getElementById('adminLoginBtn').addEventListener('click', () => {
+                if (!isAdminMode) {
+                    document.getElementById('passwordModal').classList.add('active');
+                    document.getElementById('passwordInput').focus();
+                } else {
+                    isAdminMode = false;
+                    updateAdminUI();
+                    showToast('🔒 관리자 모드 종료');
+                }
+            });
+            // 설정 버튼 (톱니바퀴)
             document.getElementById('modeToggle').addEventListener('click', () => {
-                if (!isAdminMode) { document.getElementById('passwordModal').classList.add('active'); document.getElementById('passwordInput').focus(); }
-                else { isAdminMode = false; showToast('🔒 관리자 모드 종료'); }
+                if (!isAdminMode) {
+                    document.getElementById('passwordModal').classList.add('active');
+                    document.getElementById('passwordInput').focus();
+                } else {
+                    isAdminMode = false;
+                    updateAdminUI();
+                    showToast('🔒 관리자 모드 종료');
+                }
             });
             document.getElementById('passwordInput').addEventListener('keypress', (e) => { if (e.key === 'Enter') checkPassword(); });
             const notificationToggle = document.getElementById('notificationToggle');
@@ -361,7 +410,8 @@
             if (latestTime) {
                 lastUpdateTimestamp = latestTime;
                 document.getElementById('lastUpdateTime').textContent = formatTime(latestTime);
-                document.getElementById('lastUpdateAgo').textContent = '· ' + formatTimeAgo(latestTime);
+                document.getElementById('lastUpdateDate').textContent = formatFullDate(latestTime);
+                document.getElementById('lastUpdateAgo').textContent = formatTimeAgo(latestTime);
             }
             const location = locationMap[data.location] || locationMap['going_home'];
             document.getElementById('locationEmoji').textContent = location.emoji;
@@ -394,22 +444,54 @@
         function displayMessageHistory(messages) {
             const history = document.getElementById('messageHistory');
             if (!messages || messages.length === 0) { history.innerHTML = '<div class="message-empty">아직 메시지가 없어요</div>'; return; }
+            
+            // 날짜별로 그룹화
+            const grouped = {};
+            messages.forEach(msg => {
+                const date = new Date(msg.timestamp);
+                const dateKey = formatDateKey(date);
+                if (!grouped[dateKey]) grouped[dateKey] = [];
+                grouped[dateKey].push(msg);
+            });
+            
+            // 날짜 키를 최신순으로 정렬
+            const sortedDates = Object.keys(grouped).sort((a, b) => new Date(b) - new Date(a));
+            
             const typeText = {message:'💬 메시지',advice:'❤️ 당부',memo:'📝 메모'};
             const typeClass = {message:'message',advice:'advice',memo:'memo'};
-            history.innerHTML = messages.map(msg => `
-                <div class="message-item">
-                    <div class="message-header">
-                        <div class="message-meta">
-                            <span class="message-badge ${typeClass[msg.type] || 'message'}">${typeText[msg.type] || '💬 메시지'}</span>
-                            <span class="message-sender">${msg.sender === 'dad' ? '👨 아버지' : '👧 다영'}</span>
+            
+            let html = '';
+            sortedDates.forEach(dateKey => {
+                const msgs = grouped[dateKey];
+                const dateObj = new Date(dateKey);
+                const displayDate = formatGroupDate(dateObj);
+                
+                html += `<div class="date-group">
+                    <div class="date-header">
+                        <span class="date-header-icon">📅</span>
+                        <span class="date-header-text">${displayDate}</span>
+                        <span class="date-header-count">${msgs.length}개</span>
+                    </div>`;
+                
+                // 해당 날짜의 메시지들 (시간순 정렬)
+                msgs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                msgs.forEach(msg => {
+                    html += `<div class="message-item ${typeClass[msg.type] || 'message'}">
+                        <div class="message-header">
+                            <div class="message-meta">
+                                <span class="message-badge ${typeClass[msg.type] || 'message'}">${typeText[msg.type] || '💬 메시지'}</span>
+                                <span class="message-sender">${msg.sender === 'dad' ? '👨 아버지' : '👧 다영'}</span>
+                            </div>
+                            <div class="message-actions"><button class="msg-action-btn delete" onclick="deleteMessage('${msg.id}')">🗑️</button></div>
                         </div>
-                        <div class="message-actions"><button class="msg-action-btn delete" onclick="deleteMessage('${msg.id}')">🗑️</button></div>
-                    </div>
-                    <div class="message-content">${escapeHtml(msg.content)}</div>
-                    <div class="message-time">${formatTime(new Date(msg.timestamp))} · ${formatTimeAgo(new Date(msg.timestamp))}</div>
-                </div>
-            `).join('');
-            history.scrollTop = history.scrollHeight;
+                        <div class="message-content">${escapeHtml(msg.content)}</div>
+                        <div class="message-time">${formatTime(new Date(msg.timestamp))}</div>
+                    </div>`;
+                });
+                html += '</div>';
+            });
+            
+            history.innerHTML = html;
         }
 
         async function deleteMessage(messageId) {
@@ -428,6 +510,19 @@
 
         function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
         function formatTime(date) { return date.toLocaleTimeString('ko-KR', { hour: 'numeric', minute: '2-digit', hour12: true }); }
+        function formatFullDate(date) { return date.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' }); }
+        function formatDateKey(date) { return date.toISOString().split('T')[0]; }
+        function formatGroupDate(date) {
+            const today = new Date();
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+            const dateStr = date.toISOString().split('T')[0];
+            const todayStr = today.toISOString().split('T')[0];
+            const yesterdayStr = yesterday.toISOString().split('T')[0];
+            if (dateStr === todayStr) return '오늘';
+            if (dateStr === yesterdayStr) return '어제';
+            return date.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' });
+        }
         function formatTimeAgo(date) {
             const diff = new Date() - date;
             const minutes = Math.floor(diff / 60000), hours = Math.floor(diff / 3600000), days = Math.floor(diff / 86400000);
@@ -438,7 +533,18 @@
             return days + '일 전';
         }
         function showToast(message) { const toast = document.getElementById('toast'); toast.textContent = message; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 2500); }
-        function checkPassword() { const input = document.getElementById('passwordInput'); if (input.value === ADMIN_PASSWORD) { isAdminMode = true; closeModal(); showToast('🔓 관리자 모드 활성화'); } else { showToast('❌ 비밀번호 오류'); input.value = ''; } }
+        function checkPassword() { 
+            const input = document.getElementById('passwordInput'); 
+            if (input.value === ADMIN_PASSWORD) { 
+                isAdminMode = true; 
+                closeModal(); 
+                updateAdminUI();
+                showToast('🔓 관리자 모드 활성화'); 
+            } else { 
+                showToast('❌ 비밀번호 오류'); 
+                input.value = ''; 
+            } 
+        }
         function closeModal() { document.getElementById('passwordModal').classList.remove('active'); document.getElementById('passwordInput').value = ''; }
     </script>
 </body>
