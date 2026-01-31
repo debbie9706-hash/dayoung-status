@@ -743,6 +743,17 @@
             <button id="closeBannerBtn" class="close-banner-btn">나중에</button>
         </div>
 
+        <!-- iOS Safari용 설치 안내 -->
+        <div id="iosInstallBanner" class="install-banner" style="display: none;">
+            <div class="install-banner-title">📱 홈 화면에 추가</div>
+            <div class="install-banner-subtitle" style="text-align: left; line-height: 1.6;">
+                1. 하단의 <strong>공유</strong> 버튼(📤)을 누르세요<br>
+                2. <strong>"홈 화면에 추가"</strong>를 선택하세요<br>
+                3. 오른쪽 상단의 <strong>"추가"</strong>를 누르세요
+            </div>
+            <button id="closeIosBannerBtn" class="close-banner-btn" style="margin-top: 16px;">확인</button>
+        </div>
+
         <div class="header">
             <div class="header-emoji">💕</div>
             <h1>다영이 상태</h1>
@@ -909,16 +920,59 @@
         let deferredPrompt;
         
         function setupInstallPrompt() {
-            // beforeinstallprompt 이벤트 캡처
+            // iOS Safari 감지
+            const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent) && !window.MSStream;
+            const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator.standalone);
+            
+            // PWA 진단 정보 출력
+            console.log('=== PWA 진단 ===');
+            console.log('1. HTTPS:', location.protocol === 'https:' ? '✅' : '❌');
+            console.log('2. Service Worker 지원:', 'serviceWorker' in navigator ? '✅' : '❌');
+            console.log('3. 이미 설치됨:', isAppInstalled() ? '✅' : '❌');
+            console.log('4. 배너 닫힘:', localStorage.getItem('installBannerDismissed') ? '✅' : '❌');
+            console.log('5. iOS:', isIOS ? '✅' : '❌');
+            console.log('6. Standalone 모드:', isInStandaloneMode ? '✅' : '❌');
+            
+            // iOS Safari인 경우 수동 설치 안내 표시
+            if (isIOS && !isInStandaloneMode && !localStorage.getItem('installBannerDismissed')) {
+                console.log('📱 iOS 설치 배너 표시');
+                document.getElementById('iosInstallBanner').style.display = 'block';
+                
+                document.getElementById('closeIosBannerBtn').addEventListener('click', () => {
+                    document.getElementById('iosInstallBanner').style.display = 'none';
+                    localStorage.setItem('installBannerDismissed', 'true');
+                });
+                return;
+            }
+            
+            // beforeinstallprompt 이벤트 캡처 (Android/Desktop Chrome)
             window.addEventListener('beforeinstallprompt', (e) => {
+                console.log('✅ beforeinstallprompt 이벤트 발생!');
                 e.preventDefault();
                 deferredPrompt = e;
                 
                 // 이미 설치했거나 배너를 닫은 경우 표시 안 함
                 if (!localStorage.getItem('installBannerDismissed') && !isAppInstalled()) {
+                    console.log('📱 설치 배너 표시');
                     document.getElementById('installBanner').style.display = 'block';
+                } else {
+                    console.log('⚠️ 배너 표시 안 함:', {
+                        dismissed: localStorage.getItem('installBannerDismissed'),
+                        installed: isAppInstalled()
+                    });
                 }
             });
+
+            // 타임아웃으로 beforeinstallprompt가 발생하지 않는 경우 체크
+            setTimeout(() => {
+                if (!deferredPrompt && !isIOS) {
+                    console.log('⚠️ beforeinstallprompt 이벤트가 5초 내에 발생하지 않았습니다.');
+                    console.log('가능한 원인:');
+                    console.log('- 이미 앱이 설치되어 있음');
+                    console.log('- PWA 설치 조건 미충족 (manifest.json, service worker, icons)');
+                    console.log('- 브라우저가 PWA를 지원하지 않음');
+                }
+            }, 5000);
 
             // 설치 버튼 클릭
             document.getElementById('installBtn').addEventListener('click', async () => {
@@ -948,6 +1002,7 @@
 
             // 이미 설치된 경우 감지
             window.addEventListener('appinstalled', () => {
+                console.log('✅ 앱 설치 완료!');
                 showToast('앱이 성공적으로 설치되었습니다! 🎉', 'success');
                 document.getElementById('installBanner').style.display = 'none';
             });
