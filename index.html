@@ -498,6 +498,86 @@
             font-size: 1.1em;
         }
 
+        /* 앱 설치 배너 */
+        .install-banner {
+            background: linear-gradient(135deg, #667EEA 0%, #764BA2 100%);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .install-banner-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .install-banner-subtitle {
+            font-size: 0.95em;
+            opacity: 0.95;
+            margin-bottom: 16px;
+            line-height: 1.4;
+        }
+
+        .install-btn {
+            width: 100%;
+            padding: 16px;
+            background: white;
+            color: #667EEA;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .install-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .install-btn:active {
+            transform: scale(0.98);
+        }
+
+        .close-banner-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: all 0.2s;
+        }
+
+        .close-banner-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: white;
+        }
+
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -649,6 +729,20 @@
 </head>
 <body>
     <div class="container">
+        <!-- 앱 설치 배너 -->
+        <div id="installBanner" class="install-banner" style="display: none;">
+            <div class="install-banner-title">📱 앱으로 설치하기</div>
+            <div class="install-banner-subtitle">
+                홈 화면에 추가하면 앱처럼 빠르게 사용할 수 있어요!<br>
+                오프라인에서도 작동합니다.
+            </div>
+            <button id="installBtn" class="install-btn">
+                <span>⬇️</span>
+                <span>지금 설치하기</span>
+            </button>
+            <button id="closeBannerBtn" class="close-banner-btn">나중에</button>
+        </div>
+
         <div class="header">
             <div class="header-emoji">💕</div>
             <h1>다영이 상태</h1>
@@ -806,9 +900,64 @@
             fetchStatus();
             setupEventListeners();
             registerServiceWorker();
+            setupInstallPrompt();
             startPolling();
             setInterval(updateTimeAgo, 60000);
         });
+
+        // PWA 설치 기능
+        let deferredPrompt;
+        
+        function setupInstallPrompt() {
+            // beforeinstallprompt 이벤트 캡처
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                
+                // 이미 설치했거나 배너를 닫은 경우 표시 안 함
+                if (!localStorage.getItem('installBannerDismissed') && !isAppInstalled()) {
+                    document.getElementById('installBanner').style.display = 'block';
+                }
+            });
+
+            // 설치 버튼 클릭
+            document.getElementById('installBtn').addEventListener('click', async () => {
+                if (!deferredPrompt) {
+                    showToast('설치 기능을 사용할 수 없습니다', 'error');
+                    return;
+                }
+
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                
+                if (outcome === 'accepted') {
+                    showToast('앱이 설치되었습니다! 🎉', 'success');
+                } else {
+                    showToast('설치가 취소되었습니다', 'info');
+                }
+                
+                deferredPrompt = null;
+                document.getElementById('installBanner').style.display = 'none';
+            });
+
+            // 나중에 버튼 클릭
+            document.getElementById('closeBannerBtn').addEventListener('click', () => {
+                document.getElementById('installBanner').style.display = 'none';
+                localStorage.setItem('installBannerDismissed', 'true');
+            });
+
+            // 이미 설치된 경우 감지
+            window.addEventListener('appinstalled', () => {
+                showToast('앱이 성공적으로 설치되었습니다! 🎉', 'success');
+                document.getElementById('installBanner').style.display = 'none';
+            });
+        }
+
+        function isAppInstalled() {
+            // 독립 실행형 모드인지 확인
+            return window.matchMedia('(display-mode: standalone)').matches || 
+                   window.navigator.standalone === true;
+        }
 
         // Service Worker 등록
         function registerServiceWorker() {
