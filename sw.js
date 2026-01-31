@@ -1,61 +1,1158 @@
-const CACHE_NAME = 'dayoung-status-v1';
-const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/icon-192.png',
-  '/icon-512.png'
-];
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>다영이 상태 알림</title>
+    
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#5B8A72">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="다영이 상태">
+    <link rel="apple-touch-icon" href="./icon-192.png">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-// 설치
-self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        return cache.addAll(urlsToCache);
-      })
-      .catch(err => {
-        console.log('Cache install error:', err);
-      })
-  );
-});
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Malgun Gothic', '맑은 고딕', sans-serif;
+            background: #F5F1EB;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
 
-// 활성화
-self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-  );
-});
+        .container {
+            background: white;
+            border-radius: 28px;
+            padding: 28px 24px;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        }
 
-// 요청 처리
-self.addEventListener('fetch', event => {
-  // API 요청은 항상 네트워크에서 가져오기
-  if (event.request.url.includes('workers.dev')) {
-    event.respondWith(
-      fetch(event.request)
-        .catch(() => {
-          return caches.match(event.request);
-        })
-    );
-    return;
-  }
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
 
-  // 그 외 요청은 캐시 우선
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        return response || fetch(event.request);
-      })
-      .catch(() => {
-        return caches.match('/index.html');
-      })
-  );
-});
+        .header-emoji {
+            font-size: 3em;
+            margin-bottom: 8px;
+        }
+
+        h1 {
+            color: #2D3436;
+            font-size: 1.5em;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .subtitle {
+            color: #636E72;
+            font-size: 1em;
+            line-height: 1.5;
+        }
+
+        .last-update-banner {
+            background: linear-gradient(135deg, #74B9FF 0%, #0984E3 100%);
+            border-radius: 16px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            color: white;
+            text-align: center;
+        }
+
+        .last-update-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 4px;
+        }
+
+        .last-update-time {
+            font-size: 1.4em;
+            font-weight: 700;
+        }
+
+        .last-update-date {
+            font-size: 0.95em;
+            opacity: 0.95;
+            margin-top: 2px;
+        }
+
+        .last-update-ago {
+            font-size: 0.95em;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+
+        .status-card {
+            border-radius: 20px;
+            padding: 28px 24px;
+            margin-bottom: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .status-card.location-going_home {
+            background: #E8F5E9;
+            border: 2px solid #81C784;
+        }
+
+        .status-card.location-at_home {
+            background: #E0F7FA;
+            border: 2px solid #4DD0E1;
+        }
+
+        .status-card.location-outside {
+            background: #FFF8E1;
+            border: 2px solid #FFD54F;
+        }
+
+        .status-card.location-busy {
+            background: #FFEBEE;
+            border: 2px solid #E57373;
+        }
+
+        .status-card.hunger-hungry {
+            background: #FCE4EC;
+            border: 2px solid #F06292;
+        }
+
+        .status-card.hunger-not_hungry {
+            background: #E3F2FD;
+            border: 2px solid #64B5F6;
+        }
+
+        .status-label {
+            font-size: 0.95em;
+            color: #636E72;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+
+        .status-emoji {
+            font-size: 4.5em;
+            margin-bottom: 12px;
+            line-height: 1;
+        }
+
+        .status-text {
+            font-size: 1.4em;
+            color: #2D3436;
+            font-weight: 700;
+            line-height: 1.4;
+            word-break: keep-all;
+        }
+
+        .dad-section {
+            background: linear-gradient(135deg, #FFEAA7 0%, #FDCB6E 100%);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        /* 아버지 기분 표시 */
+        .father-info-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 10px;
+        }
+
+        .mood-display {
+            font-size: 2.5em;
+            min-width: 50px;
+        }
+
+        .mood-text {
+            font-weight: 600;
+            color: #2D3436;
+        }
+
+        .mood-time {
+            font-size: 0.8em;
+            color: #636E72;
+        }
+
+        /* 아버지 기분 선택 */
+        .mood-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .mood-btn {
+            flex: 1;
+            min-width: 50px;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: all 0.2s;
+        }
+
+        .mood-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .mood-btn.selected {
+            border-color: #2D3436;
+            background: #E8F5E9;
+            transform: scale(1.1);
+        }
+
+        /* 메시지 입력 섹션 */
+        .message-section {
+            margin-bottom: 16px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 10px;
+        }
+
+        .message-section-label {
+            font-size: 0.9em;
+            font-weight: 600;
+            color: #2D3436;
+            margin-bottom: 8px;
+        }
+
+        .message-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.95em;
+            resize: none;
+            min-height: 60px;
+            font-family: inherit;
+        }
+
+        .message-input:focus {
+            outline: none;
+            border-color: #2D3436;
+            background: #fffaf0;
+        }
+
+        .dad-send-btn {
+            padding: 14px 20px;
+            background: #2D3436;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.05em;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+
+        .dad-send-btn:hover {
+            background: #1A1A1A;
+        }
+
+        .dad-send-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* 알람 설정 */
+        .notification-settings {
+            background: #F0F8FF;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border: 2px solid #B3E5FC;
+        }
+
+        .notification-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .notification-toggle label {
+            font-size: 0.95em;
+            font-weight: 600;
+            color: #2D3436;
+            cursor: pointer;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 28px;
+            background: #CCC;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-switch.on {
+            background: #4DD0E1;
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: left 0.3s;
+        }
+
+        .toggle-switch.on::after {
+            left: 24px;
+        }
+
+        .notification-status {
+            font-size: 0.85em;
+            color: #636E72;
+        }
+
+        /* 메시지 히스토리 */
+        .message-history {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid #FFE8B6;
+        }
+
+        .message-item {
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #F5E6D3;
+        }
+
+        .message-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 6px;
+        }
+
+        .message-sender-info {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .message-type-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            background: #5B8A72;
+            color: white;
+            border-radius: 4px;
+            font-size: 0.7em;
+            font-weight: 600;
+        }
+
+        .message-type-badge.advice {
+            background: #FF6B6B;
+        }
+
+        .message-type-badge.memo {
+            background: #4ECDC4;
+        }
+
+        .message-sender {
+            font-size: 0.85em;
+            font-weight: 600;
+            color: #2D3436;
+        }
+
+        .message-sender.dad {
+            color: #E17055;
+        }
+
+        .message-sender.dayoung {
+            color: #6C5CE7;
+        }
+
+        .message-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .msg-btn {
+            padding: 3px 8px;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.75em;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #f0f0f0;
+            color: #636E72;
+        }
+
+        .msg-btn:hover {
+            background: #5B8A72;
+            color: white;
+        }
+
+        .msg-btn.delete {
+            background: #ffebee;
+            color: #E57373;
+        }
+
+        .msg-btn.delete:hover {
+            background: #E57373;
+            color: white;
+        }
+
+        .msg-btn.read {
+            background: #e8f5e9;
+            color: #5B8A72;
+        }
+
+        .msg-btn.read:hover {
+            background: #5B8A72;
+            color: white;
+        }
+
+        .message-content {
+            font-size: 0.95em;
+            color: #2D3436;
+            line-height: 1.4;
+            word-break: keep-all;
+            margin-bottom: 4px;
+        }
+
+        .message-time {
+            font-size: 0.75em;
+            color: #B2BEC3;
+        }
+
+        .refresh-btn {
+            width: 100%;
+            padding: 18px;
+            background: #5B8A72;
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .refresh-btn:hover {
+            background: #4A7A62;
+        }
+
+        .refresh-btn:active {
+            transform: scale(0.98);
+        }
+
+        .loading {
+            text-align: center;
+            color: #636E72;
+            padding: 50px 20px;
+        }
+
+        .loading-spinner {
+            width: 45px;
+            height: 45px;
+            border: 4px solid #E8E8E8;
+            border-top: 4px solid #5B8A72;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 18px;
+        }
+
+        .loading-text {
+            font-size: 1.1em;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: #2D3436;
+            color: white;
+            padding: 16px 28px;
+            border-radius: 12px;
+            font-size: 1.05em;
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            text-align: center;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* 관리자 모드 토글 */
+        .mode-toggle {
+            position: fixed;
+            bottom: 15px;
+            right: 15px;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            cursor: pointer;
+            font-size: 1.1em;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            opacity: 0.5;
+            transition: opacity 0.3s;
+            z-index: 999;
+        }
+
+        .mode-toggle:hover {
+            opacity: 1;
+        }
+
+        /* 비밀번호 모달 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            padding: 28px;
+            border-radius: 20px;
+            max-width: 320px;
+            width: 90%;
+        }
+
+        .modal h3 {
+            margin-bottom: 18px;
+            color: #2D3436;
+            font-size: 1.2em;
+            text-align: center;
+        }
+
+        .modal input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #DFE6E9;
+            border-radius: 10px;
+            font-size: 1.05em;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .modal input:focus {
+            outline: none;
+            border-color: #5B8A72;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.05em;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .modal-btn.confirm {
+            background: #5B8A72;
+            color: white;
+        }
+
+        .modal-btn.cancel {
+            background: #DFE6E9;
+            color: #636E72;
+        }
+
+        /* 관리자 패널 */
+        .admin-panel {
+            display: none;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 2px dashed #DFE6E9;
+        }
+
+        .admin-panel.active {
+            display: block;
+        }
+
+        .admin-title {
+            text-align: center;
+            color: #5B8A72;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid #E8E8E8;
+            color: #B2BEC3;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-emoji">💕</div>
+            <h1>다영이 상태</h1>
+            <p class="subtitle">아버지, 편하게 확인하세요</p>
+        </div>
+
+        <div id="loading" class="loading">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">불러오는 중...</div>
+        </div>
+
+        <div id="statusView" style="display: none;">
+            <!-- 마지막 업데이트 시각 -->
+            <div class="last-update-banner">
+                <div class="last-update-label">마지막 업데이트</div>
+                <div id="lastUpdateTime" class="last-update-time">--:--</div>
+                <div id="lastUpdateDate" class="last-update-date">--년 --월 --일</div>
+                <div id="lastUpdateAgo" class="last-update-ago"></div>
+            </div>
+
+            <!-- 위치 상태 -->
+            <div id="locationCard" class="status-card location-going_home">
+                <div class="status-label">📍 지금은</div>
+                <div id="locationEmoji" class="status-emoji">🏠</div>
+                <div id="locationText" class="status-text">집에 가고 있어요</div>
+            </div>
+
+            <!-- 배고픔 상태 -->
+            <div id="hungerCard" class="status-card hunger-not_hungry">
+                <div class="status-label">🍚 밥은</div>
+                <div id="hungerEmoji" class="status-emoji">😊</div>
+                <div id="hungerText" class="status-text">배가 안 고파요</div>
+            </div>
+
+            <!-- 아버지 섹션 -->
+            <div class="dad-section">
+                <!-- 아버지 기분 표시 -->
+                <div class="father-info-header">
+                    <div class="mood-display" id="fatherMoodDisplay">😐</div>
+                    <div>
+                        <div class="mood-text" id="fatherMoodText">보통</div>
+                        <div class="mood-time" id="fatherMoodTime">업데이트 없음</div>
+                    </div>
+                </div>
+
+                <!-- 아버지 기분 선택 -->
+                <div class="mood-selector" id="moodSelector">
+                    <button class="mood-btn" data-mood="good" title="좋음">😊</button>
+                    <button class="mood-btn" data-mood="normal" title="보통">😐</button>
+                    <button class="mood-btn" data-mood="tired" title="피곤">😔</button>
+                    <button class="mood-btn" data-mood="angry" title="화남">😡</button>
+                    <button class="mood-btn" data-mood="sad" title="슬픔">😢</button>
+                </div>
+
+                <!-- 4개 메시지 섹션 -->
+                <div class="message-section">
+                    <div class="message-section-label">💬 하고싶은 말</div>
+                    <textarea id="fatherMessageInput" class="message-input" placeholder="다영이에게 하고싶은 말을 적어주세요..."></textarea>
+                </div>
+
+                <div class="message-section">
+                    <div class="message-section-label">❤️ 당부할 말</div>
+                    <textarea id="fatherAdviceInput" class="message-input" placeholder="다영이에게 당부하고 싶은 말을 적어주세요..."></textarea>
+                </div>
+
+                <div class="message-section">
+                    <div class="message-section-label">📝 기타 메모</div>
+                    <textarea id="fatherMemoInput" class="message-input" placeholder="기타 사항을 메모해주세요..."></textarea>
+                </div>
+
+                <!-- 저장 버튼 -->
+                <button id="fatherSaveBtn" class="dad-send-btn" style="margin-bottom: 16px;">
+                    <span>💾</span>
+                    <span>아버지 정보 저장</span>
+                </button>
+
+                <!-- 알람 설정 -->
+                <div class="notification-settings">
+                    <div class="notification-toggle">
+                        <label for="notificationToggle">새 메시지 알림</label>
+                        <div id="notificationToggle" class="toggle-switch" role="checkbox" aria-checked="false"></div>
+                    </div>
+                    <div class="notification-status" id="notificationStatus">알림이 꺼져있습니다</div>
+                </div>
+
+                <!-- 메시지 히스토리 -->
+                <div id="messageHistory" class="message-history">
+                    <div style="text-align: center; color: #B2BEC3; padding: 20px 10px; font-size: 0.95em;">
+                        아직 메시지가 없어요
+                    </div>
+                </div>
+            </div>
+
+            <!-- 새로고침 버튼 -->
+            <button id="refreshBtn" class="refresh-btn">
+                <span>🔄</span>
+                <span>다시 확인하기</span>
+            </button>
+        </div>
+
+        <div class="footer">
+            💕 다영
+        </div>
+    </div>
+
+    <!-- 관리자 모드 토글 버튼 -->
+    <button id="modeToggle" class="mode-toggle">⚙️</button>
+
+    <!-- 비밀번호 모달 -->
+    <div id="passwordModal" class="modal-overlay">
+        <div class="modal">
+            <h3>🔐 비밀번호</h3>
+            <input type="password" id="passwordInput" placeholder="비밀번호 입력">
+            <div class="modal-buttons">
+                <button class="modal-btn cancel" onclick="closeModal()">취소</button>
+                <button class="modal-btn confirm" onclick="checkPassword()">확인</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        const API_URL = 'https://dayoung-status.cjsghd8064.workers.dev';
+        const ADMIN_PASSWORD = '242828';
+
+        let fatherMood = 'normal';
+        let notificationEnabled = localStorage.getItem('notificationEnabled') === 'true';
+        let lastCheckTime = 0;
+        let lastUpdateTimestamp = null;
+        let pollingInterval = null;
+        let isAdminMode = false;
+
+        const moodMap = {
+            'good': { emoji: '😊', text: '좋음' },
+            'normal': { emoji: '😐', text: '보통' },
+            'tired': { emoji: '😔', text: '피곤' },
+            'angry': { emoji: '😡', text: '화남' },
+            'sad': { emoji: '😢', text: '슬픔' }
+        };
+
+        const locationMap = {
+            'going_home': { emoji: '🚶', text: '집에 가고 있어요' },
+            'at_home': { emoji: '🏠', text: '집에 도착했어요!' },
+            'outside': { emoji: '🌙', text: '아직 밖에 있어요' },
+            'busy': { emoji: '💼', text: '지금 바빠요' }
+        };
+
+        const hungerMap = {
+            'not_hungry': { emoji: '😊', text: '배 안 고파요' },
+            'hungry': { emoji: '🍽️', text: '배고파요' }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchStatus();
+            setupEventListeners();
+            registerServiceWorker();
+            startPolling();
+            setInterval(updateTimeAgo, 60000);
+        });
+
+        // Service Worker 등록
+        function registerServiceWorker() {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => {
+                        console.log('Service Worker 등록 성공');
+                    })
+                    .catch(err => {
+                        console.log('Service Worker 등록 실패:', err);
+                    });
+            }
+        }
+
+        function updateTimeAgo() {
+            if (lastUpdateTimestamp) {
+                document.getElementById('lastUpdateAgo').textContent = formatTimeAgo(lastUpdateTimestamp);
+            }
+        }
+
+        function setupEventListeners() {
+            // 아버지 기분 선택
+            document.querySelectorAll('.mood-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    fatherMood = btn.dataset.mood;
+                });
+            });
+
+            // 아버지 정보 저장
+            document.getElementById('fatherSaveBtn').addEventListener('click', saveFatherInfo);
+
+            // 새로고침
+            document.getElementById('refreshBtn').addEventListener('click', () => {
+                document.getElementById('refreshBtn').innerHTML = '<span>⏳</span><span>확인 중...</span>';
+                fetchStatus().then(() => {
+                    document.getElementById('refreshBtn').innerHTML = '<span>🔄</span><span>다시 확인하기</span>';
+                    showToast('✅ 업데이트 완료!');
+                });
+            });
+
+            // 관리자 모드 토글
+            document.getElementById('modeToggle').addEventListener('click', () => {
+                if (!isAdminMode) {
+                    document.getElementById('passwordModal').classList.add('active');
+                    document.getElementById('passwordInput').focus();
+                } else {
+                    isAdminMode = false;
+                    showToast('🔒 관리자 모드 종료');
+                }
+            });
+
+            // 비밀번호 입력 엔터키
+            document.getElementById('passwordInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    checkPassword();
+                }
+            });
+
+            // 알람 토글
+            const notificationToggle = document.getElementById('notificationToggle');
+            const notificationStatus = document.getElementById('notificationStatus');
+            
+            if (notificationEnabled) {
+                notificationToggle.classList.add('on');
+                notificationStatus.textContent = '✅ 알림이 켜져있습니다';
+            }
+
+            notificationToggle.addEventListener('click', () => {
+                notificationEnabled = !notificationEnabled;
+                localStorage.setItem('notificationEnabled', notificationEnabled);
+                
+                if (notificationEnabled) {
+                    notificationToggle.classList.add('on');
+                    notificationStatus.textContent = '✅ 알림이 켜져있습니다';
+                    showToast('🔔 알림 활성화!');
+                    if ('Notification' in window && Notification.permission === 'default') {
+                        Notification.requestPermission();
+                    }
+                } else {
+                    notificationToggle.classList.remove('on');
+                    notificationStatus.textContent = '알림이 꺼져있습니다';
+                    showToast('🔕 알림 비활성화');
+                }
+            });
+        }
+
+        async function saveFatherInfo() {
+            const message = document.getElementById('fatherMessageInput').value.trim();
+            const advice = document.getElementById('fatherAdviceInput').value.trim();
+            const memo = document.getElementById('fatherMemoInput').value.trim();
+
+            if (!fatherMood && !message && !advice && !memo) {
+                showToast('정보를 입력해주세요');
+                return;
+            }
+
+            try {
+                const body = {};
+                if (fatherMood) body.fatherMood = fatherMood;
+                if (message) body.fatherMessage = message;
+                if (advice) body.fatherAdvice = advice;
+                if (memo) body.fatherMemo = memo;
+
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+
+                const data = await response.json();
+                updateDisplay(data);
+                
+                document.getElementById('fatherMessageInput').value = '';
+                document.getElementById('fatherAdviceInput').value = '';
+                document.getElementById('fatherMemoInput').value = '';
+                
+                showToast('✅ 정보 저장 완료!');
+            } catch (error) {
+                console.error('저장 실패:', error);
+                showToast('❌ 저장 실패');
+            }
+        }
+
+        function startPolling() {
+            pollingInterval = setInterval(() => {
+                console.log('📡 새 메시지 확인...');
+                fetchStatus();
+            }, 3 * 60 * 1000); // 3분
+        }
+
+        async function fetchStatus() {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('statusView').style.display = 'block';
+                
+                updateDisplay(data);
+                return data;
+            } catch (error) {
+                console.error('로드 실패:', error);
+                document.getElementById('loading').innerHTML = 
+                    '<div style="font-size:3em; margin-bottom:15px;">😢</div>' +
+                    '<div class="loading-text">연결할 수 없어요</div>';
+            }
+        }
+
+        function updateDisplay(data) {
+            // 시간 업데이트
+            const locationTime = data.locationUpdated ? new Date(data.locationUpdated) : null;
+            const hungerTime = data.hungerUpdated ? new Date(data.hungerUpdated) : null;
+            
+            let latestTime = locationTime;
+            if (hungerTime && (!latestTime || hungerTime > latestTime)) {
+                latestTime = hungerTime;
+            }
+            
+            if (latestTime) {
+                lastUpdateTimestamp = latestTime;
+                document.getElementById('lastUpdateTime').textContent = formatTime(latestTime);
+                document.getElementById('lastUpdateDate').textContent = formatDate(latestTime);
+                document.getElementById('lastUpdateAgo').textContent = formatTimeAgo(latestTime);
+            }
+
+            // 위치
+            const location = locationMap[data.location] || locationMap['going_home'];
+            document.getElementById('locationEmoji').textContent = location.emoji;
+            document.getElementById('locationText').textContent = location.text;
+            document.getElementById('locationCard').className = 'status-card location-' + (data.location || 'going_home');
+
+            // 배고픔
+            const hunger = hungerMap[data.hunger] || hungerMap['not_hungry'];
+            document.getElementById('hungerEmoji').textContent = hunger.emoji;
+            document.getElementById('hungerText').textContent = hunger.text;
+            document.getElementById('hungerCard').className = 'status-card hunger-' + (data.hunger || 'not_hungry');
+
+            // 아버지 기분
+            updateFatherInfo(data);
+
+            // 메시지 히스토리
+            displayMessageHistory(data.messages);
+
+            // 새 메시지 알람 (Polling)
+            if (data.messages && data.messages.length > 0) {
+                const latestMsg = data.messages[data.messages.length - 1];
+                
+                if (latestMsg.sender === 'dad' && lastCheckTime < new Date(latestMsg.timestamp).getTime()) {
+                    sendNotification('💬 아버지가 정보를 업데이트했어요!', {
+                        body: latestMsg.content.substring(0, 50)
+                    });
+                    lastCheckTime = new Date(latestMsg.timestamp).getTime();
+                }
+            }
+        }
+
+        function updateFatherInfo(data) {
+            if (data.fatherMood) {
+                const mood = moodMap[data.fatherMood];
+                document.getElementById('fatherMoodDisplay').textContent = mood.emoji;
+                document.getElementById('fatherMoodText').textContent = mood.text;
+                
+                if (data.fatherMoodUpdated) {
+                    document.getElementById('fatherMoodTime').textContent = 
+                        formatTime(new Date(data.fatherMoodUpdated));
+                }
+            }
+        }
+
+        function displayMessageHistory(messages) {
+            const history = document.getElementById('messageHistory');
+            
+            if (!messages || messages.length === 0) {
+                history.innerHTML = '<div style="text-align: center; color: #B2BEC3; padding: 20px 10px; font-size: 0.95em;">아직 메시지가 없어요</div>';
+                return;
+            }
+
+            const typeText = {
+                'message': '💬',
+                'advice': '❤️',
+                'memo': '📝'
+            };
+
+            history.innerHTML = messages.map(msg => `
+                <div class="message-item">
+                    <div class="message-header">
+                        <div class="message-sender-info">
+                            <span class="message-type-badge${msg.type === 'advice' ? ' advice' : msg.type === 'memo' ? ' memo' : ''}">
+                                ${typeText[msg.type] || '💬'}
+                            </span>
+                            <span class="message-sender${msg.sender === 'dad' ? ' dad' : ' dayoung'}">
+                                ${msg.sender === 'dad' ? '👨 아버지' : '👧 다영'}
+                            </span>
+                        </div>
+                        <div class="message-actions">
+                            ${!msg.read ? `<button class="msg-btn read" onclick="markAsRead('${msg.id}')">✓</button>` : ''}
+                            <button class="msg-btn delete" onclick="deleteMessage('${msg.id}')">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="message-content">${escapeHtml(msg.content)}</div>
+                    <div class="message-time">${formatTime(new Date(msg.timestamp))} · ${formatTimeAgo(new Date(msg.timestamp))}</div>
+                </div>
+            `).join('');
+            
+            history.scrollTop = history.scrollHeight;
+        }
+
+        async function deleteMessage(messageId) {
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ messageId })
+                });
+
+                const data = await response.json();
+                updateDisplay(data);
+                showToast('🗑️ 삭제 완료');
+            } catch (error) {
+                console.error('삭제 실패:', error);
+                showToast('❌ 삭제 실패');
+            }
+        }
+
+        async function markAsRead(messageId) {
+            showToast('✅ 읽음 표시 완료');
+        }
+
+        function sendNotification(title, options = {}) {
+            if (!notificationEnabled) return;
+            
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification(title, {
+                    icon: 'icon-192.png',
+                    tag: 'dayoung-status',
+                    ...options
+                });
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatTime(date) {
+            return date.toLocaleTimeString('ko-KR', {
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true
+            });
+        }
+
+        function formatDate(date) {
+            return date.toLocaleDateString('ko-KR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        function formatTimeAgo(date) {
+            const now = new Date();
+            const diff = now - date;
+            
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+            
+            if (minutes < 1) return '방금 전';
+            if (minutes < 60) return minutes + '분 전';
+            if (hours < 24) return hours + '시간 전';
+            if (days === 1) return '어제';
+            return days + '일 전';
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
+        }
+
+        function checkPassword() {
+            const input = document.getElementById('passwordInput');
+            if (input.value === ADMIN_PASSWORD) {
+                isAdminMode = true;
+                closeModal();
+                showToast('🔓 관리자 모드 활성화');
+            } else {
+                showToast('❌ 비밀번호 오류');
+                input.value = '';
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('passwordModal').classList.remove('active');
+            document.getElementById('passwordInput').value = '';
+        }
+    </script>
+</body>
+</html>
