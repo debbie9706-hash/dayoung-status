@@ -787,7 +787,7 @@ async function subscribePush() {
 }
 function urlB64(b64) { const p='='.repeat((4-b64.length%4)%4); const b=(b64+p).replace(/-/g,'+').replace(/_/g,'/'); return Uint8Array.from(atob(b),c=>c.charCodeAt(0)); }
 
-function formatTime(ts) {
+function formatTime(ts) {    const d = new Date(ts);    const year = d.getFullYear();    const month = d.getMonth() + 1;    const day = d.getDate();    const h = d.getHours();    const m = d.getMinutes();    const ampm = h < 12 ? '오전' : '오후';    const hour = h % 12 || 12;    return `${year}.${month}.${day} ${ampm} ${hour}:${String(m).padStart(2, '0')}`;}function formatTimeOld(ts) {
     const d = new Date(ts);
     return `${d.getHours() < 12 ? '오전' : '오후'} ${d.getHours() % 12 || 12}:${String(d.getMinutes()).padStart(2, '0')}`;
 }
