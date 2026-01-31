@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>다영이 상태 알림</title>
     
-    <!-- PWA 설정 -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#5B8A72">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -39,7 +38,6 @@
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
         }
 
-        /* 헤더 영역 */
         .header {
             text-align: center;
             margin-bottom: 24px;
@@ -63,7 +61,6 @@
             line-height: 1.5;
         }
 
-        /* 마지막 업데이트 시각 - 눈에 띄게 */
         .last-update-banner {
             background: linear-gradient(135deg, #74B9FF 0%, #0984E3 100%);
             border-radius: 16px;
@@ -96,7 +93,6 @@
             margin-top: 4px;
         }
 
-        /* 상태 카드 - 단순하고 명확하게 */
         .status-card {
             border-radius: 20px;
             padding: 28px 24px;
@@ -105,7 +101,6 @@
             transition: all 0.3s ease;
         }
 
-        /* 위치 상태 색상 - 부드러운 톤 */
         .status-card.location-going_home {
             background: #E8F5E9;
             border: 2px solid #81C784;
@@ -126,7 +121,6 @@
             border: 2px solid #E57373;
         }
 
-        /* 배고픔 상태 색상 */
         .status-card.hunger-hungry {
             background: #FCE4EC;
             border: 2px solid #F06292;
@@ -158,7 +152,6 @@
             word-break: keep-all;
         }
 
-        /* 아버지 메시지 섹션 */
         .dad-section {
             background: linear-gradient(135deg, #FFEAA7 0%, #FDCB6E 100%);
             border-radius: 20px;
@@ -166,91 +159,117 @@
             margin-bottom: 16px;
         }
 
-        .dad-section-title {
-            font-size: 1.1em;
-            font-weight: 700;
-            color: #2D3436;
-            margin-bottom: 12px;
+        /* 아버지 기분 표시 */
+        .father-info-header {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 10px;
         }
 
-        .dad-message-display {
-            background: white;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
-            min-height: 60px;
+        .mood-display {
+            font-size: 2.5em;
+            min-width: 50px;
         }
 
-        .dad-message-text {
-            font-size: 1.1em;
-            color: #2D3436;
-            line-height: 1.5;
-            word-break: keep-all;
-        }
-
-        .dad-message-time {
-            font-size: 0.85em;
-            color: #636E72;
-            margin-top: 8px;
-        }
-
-        /* 메시지 히스토리 */
-        .message-history {
-            background: white;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
-            max-height: 200px;
-            overflow-y: auto;
-            border: 1px solid #FFE8B6;
-        }
-
-        .message-item {
-            margin-bottom: 12px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #F5E6D3;
-        }
-
-        .message-item:last-child {
-            margin-bottom: 0;
-            padding-bottom: 0;
-            border-bottom: none;
-        }
-
-        .message-sender {
-            font-size: 0.85em;
+        .mood-text {
             font-weight: 600;
             color: #2D3436;
-            margin-bottom: 4px;
         }
 
-        .message-sender.dad {
-            color: #E17055;
+        .mood-time {
+            font-size: 0.8em;
+            color: #636E72;
         }
 
-        .message-sender.dayoung {
-            color: #6C5CE7;
+        /* 아버지 기분 선택 */
+        .mood-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
         }
 
-        .message-content {
-            font-size: 0.95em;
+        .mood-btn {
+            flex: 1;
+            min-width: 50px;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            background: white;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: all 0.2s;
+        }
+
+        .mood-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .mood-btn.selected {
+            border-color: #2D3436;
+            background: #E8F5E9;
+            transform: scale(1.1);
+        }
+
+        /* 메시지 입력 섹션 */
+        .message-section {
+            margin-bottom: 16px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 10px;
+        }
+
+        .message-section-label {
+            font-size: 0.9em;
+            font-weight: 600;
             color: #2D3436;
-            line-height: 1.4;
-            word-break: keep-all;
+            margin-bottom: 8px;
         }
 
-        .message-time {
-            font-size: 0.75em;
-            color: #B2BEC3;
-            margin-top: 4px;
+        .message-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.95em;
+            resize: none;
+            min-height: 60px;
+            font-family: inherit;
         }
 
-        .dad-message-empty {
-            color: #B2BEC3;
-            font-style: italic;
+        .message-input:focus {
+            outline: none;
+            border-color: #2D3436;
+            background: #fffaf0;
+        }
+
+        .dad-send-btn {
+            padding: 14px 20px;
+            background: #2D3436;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.05em;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+
+        .dad-send-btn:hover {
+            background: #1A1A1A;
+        }
+
+        .dad-send-btn:active {
+            transform: scale(0.98);
         }
 
         /* 알람 설정 */
@@ -311,57 +330,128 @@
             color: #636E72;
         }
 
-        .dad-input-area {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .dad-input {
-            width: 100%;
-            padding: 14px;
-            border: 2px solid rgba(255,255,255,0.5);
+        /* 메시지 히스토리 */
+        .message-history {
+            background: white;
             border-radius: 12px;
-            font-size: 1em;
-            resize: none;
-            min-height: 80px;
-            font-family: inherit;
+            padding: 16px;
+            margin-bottom: 12px;
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid #FFE8B6;
         }
 
-        .dad-input:focus {
-            outline: none;
-            border-color: white;
+        .message-item {
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #F5E6D3;
         }
 
-        .dad-input::placeholder {
+        .message-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 6px;
+        }
+
+        .message-sender-info {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .message-type-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            background: #5B8A72;
+            color: white;
+            border-radius: 4px;
+            font-size: 0.7em;
+            font-weight: 600;
+        }
+
+        .message-type-badge.advice {
+            background: #FF6B6B;
+        }
+
+        .message-type-badge.memo {
+            background: #4ECDC4;
+        }
+
+        .message-sender {
+            font-size: 0.85em;
+            font-weight: 600;
+            color: #2D3436;
+        }
+
+        .message-sender.dad {
+            color: #E17055;
+        }
+
+        .message-sender.dayoung {
+            color: #6C5CE7;
+        }
+
+        .message-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .msg-btn {
+            padding: 3px 8px;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.75em;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #f0f0f0;
+            color: #636E72;
+        }
+
+        .msg-btn:hover {
+            background: #5B8A72;
+            color: white;
+        }
+
+        .msg-btn.delete {
+            background: #ffebee;
+            color: #E57373;
+        }
+
+        .msg-btn.delete:hover {
+            background: #E57373;
+            color: white;
+        }
+
+        .msg-btn.read {
+            background: #e8f5e9;
+            color: #5B8A72;
+        }
+
+        .msg-btn.read:hover {
+            background: #5B8A72;
+            color: white;
+        }
+
+        .message-content {
+            font-size: 0.95em;
+            color: #2D3436;
+            line-height: 1.4;
+            word-break: keep-all;
+            margin-bottom: 4px;
+        }
+
+        .message-time {
+            font-size: 0.75em;
             color: #B2BEC3;
         }
 
-        .dad-send-btn {
-            padding: 14px 20px;
-            background: #2D3436;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 1.05em;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.2s ease;
-        }
-
-        .dad-send-btn:hover {
-            background: #1A1A1A;
-        }
-
-        .dad-send-btn:active {
-            transform: scale(0.98);
-        }
-
-        /* 새로고침 버튼 */
         .refresh-btn {
             width: 100%;
             padding: 18px;
@@ -388,278 +478,6 @@
             transform: scale(0.98);
         }
 
-        .refresh-btn .btn-icon {
-            font-size: 1.2em;
-        }
-
-        /* 앱 설치 배너 */
-        .install-banner {
-            display: none;
-            background: #5B8A72;
-            border-radius: 14px;
-            padding: 18px;
-            margin-top: 16px;
-            text-align: center;
-            color: white;
-        }
-
-        .install-banner.show {
-            display: block;
-        }
-
-        .install-banner-title {
-            font-size: 1.1em;
-            font-weight: 600;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .install-banner-text {
-            font-size: 0.95em;
-            margin-bottom: 12px;
-            line-height: 1.4;
-            opacity: 0.95;
-        }
-
-        .install-btn {
-            background: white;
-            color: #5B8A72;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 10px;
-            font-size: 1.1em;
-            font-weight: 600;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .install-dismiss {
-            background: transparent;
-            color: white;
-            border: 1.5px solid rgba(255,255,255,0.5);
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 0.95em;
-            cursor: pointer;
-            margin-left: 8px;
-        }
-
-        /* iOS 설치 안내 */
-        .ios-install-guide {
-            display: none;
-            background: #F8F9FA;
-            border-radius: 14px;
-            padding: 18px;
-            margin-top: 16px;
-            text-align: center;
-        }
-
-        .ios-install-guide.show {
-            display: block;
-        }
-
-        .ios-install-guide h3 {
-            font-size: 1.1em;
-            margin-bottom: 14px;
-            color: #2D3436;
-        }
-
-        .ios-step {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px;
-            background: white;
-            border-radius: 10px;
-            margin-bottom: 8px;
-            text-align: left;
-        }
-
-        .ios-step-num {
-            background: #5B8A72;
-            color: white;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 0.9em;
-            flex-shrink: 0;
-        }
-
-        .ios-step-text {
-            font-size: 1em;
-            color: #2D3436;
-        }
-
-        /* 관리자 모드 */
-        .admin-panel {
-            display: none;
-            margin-top: 24px;
-            padding-top: 20px;
-            border-top: 2px dashed #DFE6E9;
-        }
-
-        .admin-panel.active {
-            display: block;
-        }
-
-        .admin-title {
-            text-align: center;
-            color: #5B8A72;
-            margin-bottom: 20px;
-            font-size: 1.2em;
-            font-weight: 600;
-        }
-
-        .option-group {
-            margin-bottom: 20px;
-        }
-
-        .option-label {
-            font-weight: 600;
-            color: #636E72;
-            margin-bottom: 10px;
-            display: block;
-            font-size: 1em;
-        }
-
-        .option-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .option-btn {
-            padding: 16px 18px;
-            border: 2px solid #DFE6E9;
-            border-radius: 12px;
-            background: white;
-            cursor: pointer;
-            font-size: 1.05em;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .option-btn:hover {
-            border-color: #5B8A72;
-            background: #F0F7F4;
-        }
-
-        .option-btn.selected {
-            border-color: #5B8A72;
-            background: #5B8A72;
-            color: white;
-        }
-
-        .option-btn .btn-emoji {
-            font-size: 1.6em;
-        }
-
-        .save-btn {
-            width: 100%;
-            padding: 18px;
-            background: #5B8A72;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 1.15em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            margin-top: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .save-btn:hover {
-            background: #4A7A62;
-        }
-
-        /* 아버지 메시지 표시 (관리자용) */
-        .admin-dad-message {
-            background: #FFF8E1;
-            border: 2px solid #FFD54F;
-            border-radius: 16px;
-            padding: 18px;
-            margin-bottom: 20px;
-        }
-
-        .admin-dad-message-title {
-            font-weight: 600;
-            color: #F39C12;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .admin-dad-message-content {
-            background: white;
-            border-radius: 10px;
-            padding: 14px;
-            font-size: 1.05em;
-            line-height: 1.5;
-        }
-
-        .admin-dad-message-empty {
-            color: #B2BEC3;
-            font-style: italic;
-        }
-
-        /* 모드 전환 버튼 */
-        .mode-toggle {
-            position: fixed;
-            bottom: 15px;
-            right: 15px;
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.9);
-            border: none;
-            cursor: pointer;
-            font-size: 1.1em;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            opacity: 0.5;
-            transition: opacity 0.3s;
-        }
-
-        .mode-toggle:hover {
-            opacity: 1;
-        }
-
-        /* 토스트 알림 */
-        .toast {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-100px);
-            background: #2D3436;
-            color: white;
-            padding: 16px 28px;
-            border-radius: 12px;
-            font-size: 1.05em;
-            transition: transform 0.3s ease;
-            z-index: 1000;
-            text-align: center;
-        }
-
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
-        }
-
-        /* 로딩 */
         .loading {
             text-align: center;
             color: #636E72;
@@ -685,80 +503,25 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* 비밀번호 모달 */
-        .modal-overlay {
-            display: none;
+        .toast {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
-        .modal {
-            background: white;
-            padding: 28px;
-            border-radius: 20px;
-            max-width: 320px;
-            width: 90%;
-        }
-
-        .modal h3 {
-            margin-bottom: 18px;
-            color: #2D3436;
-            font-size: 1.2em;
-            text-align: center;
-        }
-
-        .modal input {
-            width: 100%;
-            padding: 14px;
-            border: 2px solid #DFE6E9;
-            border-radius: 10px;
-            font-size: 1.05em;
-            margin-bottom: 16px;
-            text-align: center;
-        }
-
-        .modal input:focus {
-            outline: none;
-            border-color: #5B8A72;
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .modal-btn {
-            flex: 1;
-            padding: 14px;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.05em;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .modal-btn.confirm {
-            background: #5B8A72;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: #2D3436;
             color: white;
+            padding: 16px 28px;
+            border-radius: 12px;
+            font-size: 1.05em;
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            text-align: center;
         }
 
-        .modal-btn.cancel {
-            background: #DFE6E9;
-            color: #636E72;
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
         }
 
-        /* 푸터 */
         .footer {
             text-align: center;
             margin-top: 20px;
@@ -783,15 +546,15 @@
         </div>
 
         <div id="statusView" style="display: none;">
-            <!-- 마지막 업데이트 시각 배너 -->
+            <!-- 마지막 업데이트 시각 -->
             <div class="last-update-banner">
-                <div class="last-update-label">마지막으로 알려준 시각</div>
+                <div class="last-update-label">마지막 업데이트</div>
                 <div id="lastUpdateTime" class="last-update-time">--:--</div>
                 <div id="lastUpdateDate" class="last-update-date">--년 --월 --일</div>
                 <div id="lastUpdateAgo" class="last-update-ago"></div>
             </div>
 
-            <!-- 현재 상태 -->
+            <!-- 위치 상태 -->
             <div id="locationCard" class="status-card location-going_home">
                 <div class="status-label">📍 지금은</div>
                 <div id="locationEmoji" class="status-emoji">🏠</div>
@@ -802,16 +565,51 @@
             <div id="hungerCard" class="status-card hunger-not_hungry">
                 <div class="status-label">🍚 밥은</div>
                 <div id="hungerEmoji" class="status-emoji">😊</div>
-                <div id="hungerText" class="status-text">오늘은 배가 안 고파요</div>
+                <div id="hungerText" class="status-text">배가 안 고파요</div>
             </div>
 
-            <!-- 메시지 섹션 (쌍방향) -->
+            <!-- 아버지 섹션 -->
             <div class="dad-section">
-                <div class="dad-section-title">
-                    <span>💬</span>
-                    <span>메시지</span>
+                <!-- 아버지 기분 표시 -->
+                <div class="father-info-header">
+                    <div class="mood-display" id="fatherMoodDisplay">😐</div>
+                    <div>
+                        <div class="mood-text" id="fatherMoodText">보통</div>
+                        <div class="mood-time" id="fatherMoodTime">업데이트 없음</div>
+                    </div>
                 </div>
-                
+
+                <!-- 아버지 기분 선택 -->
+                <div class="mood-selector" id="moodSelector">
+                    <button class="mood-btn" data-mood="good" title="좋음">😊</button>
+                    <button class="mood-btn" data-mood="normal" title="보통">😐</button>
+                    <button class="mood-btn" data-mood="tired" title="피곤">😔</button>
+                    <button class="mood-btn" data-mood="angry" title="화남">😡</button>
+                    <button class="mood-btn" data-mood="sad" title="슬픔">😢</button>
+                </div>
+
+                <!-- 4개 메시지 섹션 -->
+                <div class="message-section">
+                    <div class="message-section-label">💬 하고싶은 말</div>
+                    <textarea id="fatherMessageInput" class="message-input" placeholder="다영이에게 하고싶은 말을 적어주세요..."></textarea>
+                </div>
+
+                <div class="message-section">
+                    <div class="message-section-label">❤️ 당부할 말</div>
+                    <textarea id="fatherAdviceInput" class="message-input" placeholder="다영이에게 당부하고 싶은 말을 적어주세요..."></textarea>
+                </div>
+
+                <div class="message-section">
+                    <div class="message-section-label">📝 기타 메모</div>
+                    <textarea id="fatherMemoInput" class="message-input" placeholder="기타 사항을 메모해주세요..."></textarea>
+                </div>
+
+                <!-- 저장 버튼 -->
+                <button id="fatherSaveBtn" class="dad-send-btn" style="margin-bottom: 16px;">
+                    <span>💾</span>
+                    <span>아버지 정보 저장</span>
+                </button>
+
                 <!-- 알람 설정 -->
                 <div class="notification-settings">
                     <div class="notification-toggle">
@@ -821,126 +619,18 @@
                     <div class="notification-status" id="notificationStatus">알림이 꺼져있습니다</div>
                 </div>
 
-                <!-- 최신 아버지 메시지 표시 (관리용) -->
-                <div class="dad-message-display" style="display: none;">
-                    <div id="dadMessageText" class="dad-message-text dad-message-empty">
-                        아직 대화가 없어요
-                    </div>
-                    <div id="dadMessageTime" class="dad-message-time" style="display: none;"></div>
-                </div>
-
                 <!-- 메시지 히스토리 -->
                 <div id="messageHistory" class="message-history">
                     <div style="text-align: center; color: #B2BEC3; padding: 20px 10px; font-size: 0.95em;">
-                        아직 대화가 없어요
+                        아직 메시지가 없어요
                     </div>
-                </div>
-
-                <!-- 메시지 입력 -->
-                <div class="dad-input-area">
-                    <textarea id="dadInput" class="dad-input" placeholder="메시지를 입력해주세요..."></textarea>
-                    <button id="dadSendBtn" class="dad-send-btn">
-                        <span>✉️</span>
-                        <span>메시지 보내기</span>
-                    </button>
                 </div>
             </div>
 
             <!-- 새로고침 버튼 -->
             <button id="refreshBtn" class="refresh-btn">
-                <span class="btn-icon">🔄</span>
+                <span>🔄</span>
                 <span>다시 확인하기</span>
-            </button>
-        </div>
-
-        <!-- 앱 설치 배너 (Android/Desktop) -->
-        <div id="installBanner" class="install-banner">
-            <div class="install-banner-title">
-                <span>📱</span>
-                <span>앱으로 설치하기</span>
-            </div>
-            <div class="install-banner-text">
-                홈 화면에 추가하면 더 편하게 열 수 있어요
-            </div>
-            <button id="installBtn" class="install-btn">
-                <span>📲</span>
-                <span>설치</span>
-            </button>
-            <button id="installDismiss" class="install-dismiss">닫기</button>
-        </div>
-
-        <!-- iOS 설치 안내 -->
-        <div id="iosInstallGuide" class="ios-install-guide">
-            <h3>📱 앱으로 설치하기</h3>
-            <div class="ios-step">
-                <div class="ios-step-num">1</div>
-                <div class="ios-step-text">아래 공유 버튼 ⬆️ 누르기</div>
-            </div>
-            <div class="ios-step">
-                <div class="ios-step-num">2</div>
-                <div class="ios-step-text">"홈 화면에 추가" 선택</div>
-            </div>
-            <div class="ios-step">
-                <div class="ios-step-num">3</div>
-                <div class="ios-step-text">"추가" 누르기</div>
-            </div>
-            <button onclick="document.getElementById('iosInstallGuide').classList.remove('show')" style="margin-top:12px; padding:10px 20px; background:#5B8A72; color:white; border:none; border-radius:8px; font-size:1em; cursor:pointer;">확인</button>
-        </div>
-
-        <!-- 관리자 패널 (다영이 전용) -->
-        <div id="adminPanel" class="admin-panel">
-            <h2 class="admin-title">✏️ 상태 변경</h2>
-            
-            <!-- 아버지 메시지 표시 -->
-            <div class="admin-dad-message">
-                <div class="admin-dad-message-title">
-                    <span>💌</span>
-                    <span>아버지가 보낸 메시지</span>
-                </div>
-                <div id="adminDadMessage" class="admin-dad-message-content admin-dad-message-empty">
-                    아직 메시지가 없어요
-                </div>
-            </div>
-            
-            <div class="option-group">
-                <label class="option-label">📍 지금은</label>
-                <div class="option-buttons">
-                    <button class="option-btn" data-type="location" data-value="going_home">
-                        <span class="btn-emoji">🚶</span>
-                        <span>집에 가고 있어요</span>
-                    </button>
-                    <button class="option-btn" data-type="location" data-value="at_home">
-                        <span class="btn-emoji">🏠</span>
-                        <span>집에 도착했어요!</span>
-                    </button>
-                    <button class="option-btn" data-type="location" data-value="outside">
-                        <span class="btn-emoji">🌙</span>
-                        <span>아직 밖에 있어요</span>
-                    </button>
-                    <button class="option-btn" data-type="location" data-value="busy">
-                        <span class="btn-emoji">💼</span>
-                        <span>지금 바빠요</span>
-                    </button>
-                </div>
-            </div>
-
-            <div class="option-group">
-                <label class="option-label">🍚 밥은</label>
-                <div class="option-buttons">
-                    <button class="option-btn" data-type="hunger" data-value="not_hungry">
-                        <span class="btn-emoji">😊</span>
-                        <span>배 안 고파요, 먼저 주무세요</span>
-                    </button>
-                    <button class="option-btn" data-type="hunger" data-value="hungry">
-                        <span class="btn-emoji">🍽️</span>
-                        <span>배고파요, 밥 주세요!</span>
-                    </button>
-                </div>
-            </div>
-
-            <button id="saveBtn" class="save-btn">
-                <span>💾</span>
-                <span>저장하기</span>
             </button>
         </div>
 
@@ -949,40 +639,25 @@
         </div>
     </div>
 
-    <!-- 모드 전환 버튼 -->
-    <button id="modeToggle" class="mode-toggle">⚙️</button>
-
-    <!-- 비밀번호 모달 -->
-    <div id="passwordModal" class="modal-overlay">
-        <div class="modal">
-            <h3>🔐 비밀번호</h3>
-            <input type="password" id="passwordInput" placeholder="비밀번호 입력">
-            <div class="modal-buttons">
-                <button class="modal-btn cancel" onclick="closeModal()">취소</button>
-                <button class="modal-btn confirm" onclick="checkPassword()">확인</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 토스트 알림 -->
     <div id="toast" class="toast"></div>
 
     <script>
-        // ⚠️ 여기에 Cloudflare Worker URL을 입력하세요!
         const API_URL = 'https://dayoung-status.cjsghd8064.workers.dev';
-        
-        // 비밀번호 설정
-        const ADMIN_PASSWORD = '242828';
 
-        let isAdminMode = false;
-        let selectedLocation = null;
-        let selectedHunger = null;
-        let deferredPrompt = null;
-        let lastUpdateTimestamp = null;
+        let fatherMood = 'normal';
         let notificationEnabled = localStorage.getItem('notificationEnabled') === 'true';
         let lastCheckTime = 0;
+        let lastUpdateTimestamp = null;
+        let pollingInterval = null;
 
-        // 상태 매핑 (집도착 추가)
+        const moodMap = {
+            'good': { emoji: '😊', text: '좋음' },
+            'normal': { emoji: '😐', text: '보통' },
+            'tired': { emoji: '😔', text: '피곤' },
+            'angry': { emoji: '😡', text: '화남' },
+            'sad': { emoji: '😢', text: '슬픔' }
+        };
+
         const locationMap = {
             'going_home': { emoji: '🚶', text: '집에 가고 있어요' },
             'at_home': { emoji: '🏠', text: '집에 도착했어요!' },
@@ -991,144 +666,51 @@
         };
 
         const hungerMap = {
-            'not_hungry': { emoji: '😊', text: '배 안 고파요, 먼저 주무세요' },
-            'hungry': { emoji: '🍽️', text: '배고파요, 밥 주세요!' }
+            'not_hungry': { emoji: '😊', text: '배 안 고파요' },
+            'hungry': { emoji: '🍽️', text: '배고파요' }
         };
 
-        // 페이지 로드 시
         document.addEventListener('DOMContentLoaded', () => {
             fetchStatus();
             setupEventListeners();
-            checkInstallability();
-            registerServiceWorker();
-            
-            // 1분마다 "~분 전" 업데이트
+            startPolling();
             setInterval(updateTimeAgo, 60000);
         });
 
-        // "~분 전" 텍스트 업데이트
         function updateTimeAgo() {
             if (lastUpdateTimestamp) {
                 document.getElementById('lastUpdateAgo').textContent = formatTimeAgo(lastUpdateTimestamp);
             }
         }
 
-        // PWA 설치 가능 여부 확인
-        function checkInstallability() {
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-            const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-            
-            if (isIOS && !isStandalone) {
-                setTimeout(() => {
-                    if (!localStorage.getItem('iosInstallDismissed')) {
-                        document.getElementById('iosInstallGuide').classList.add('show');
-                    }
-                }, 3000);
-            }
-
-            window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                deferredPrompt = e;
-                
-                if (!localStorage.getItem('installDismissed')) {
-                    document.getElementById('installBanner').classList.add('show');
-                }
-            });
-        }
-
-        // 서비스 워커 등록
-        function registerServiceWorker() {
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('sw.js')
-                    .then(reg => console.log('Service Worker 등록 성공'))
-                    .catch(err => console.log('Service Worker 등록 실패:', err));
-            }
-        }
-
         function setupEventListeners() {
-            // 새로고침 버튼
+            // 아버지 기분 선택
+            document.querySelectorAll('.mood-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    fatherMood = btn.dataset.mood;
+                });
+            });
+
+            // 아버지 정보 저장
+            document.getElementById('fatherSaveBtn').addEventListener('click', saveFatherInfo);
+
+            // 새로고침
             document.getElementById('refreshBtn').addEventListener('click', () => {
-                document.getElementById('refreshBtn').innerHTML = 
-                    '<span class="btn-icon">⏳</span><span>확인 중...</span>';
+                document.getElementById('refreshBtn').innerHTML = '<span>⏳</span><span>확인 중...</span>';
                 fetchStatus().then(() => {
-                    document.getElementById('refreshBtn').innerHTML = 
-                        '<span class="btn-icon">🔄</span><span>다시 확인하기</span>';
+                    document.getElementById('refreshBtn').innerHTML = '<span>🔄</span><span>다시 확인하기</span>';
                     showToast('✅ 업데이트 완료!');
                 });
-            });
-
-            // 아버지 메시지 전송 버튼
-            document.getElementById('dadSendBtn').addEventListener('click', sendDadMessage);
-
-            // 앱 설치 버튼
-            document.getElementById('installBtn').addEventListener('click', async () => {
-                if (deferredPrompt) {
-                    deferredPrompt.prompt();
-                    const { outcome } = await deferredPrompt.userChoice;
-                    if (outcome === 'accepted') {
-                        showToast('🎉 설치 완료!');
-                    }
-                    deferredPrompt = null;
-                    document.getElementById('installBanner').classList.remove('show');
-                }
-            });
-
-            // 설치 배너 닫기
-            document.getElementById('installDismiss').addEventListener('click', () => {
-                document.getElementById('installBanner').classList.remove('show');
-                localStorage.setItem('installDismissed', 'true');
-            });
-
-            // 옵션 버튼 클릭
-            document.querySelectorAll('.option-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const type = btn.dataset.type;
-                    const value = btn.dataset.value;
-                    
-                    document.querySelectorAll(`.option-btn[data-type="${type}"]`).forEach(b => {
-                        b.classList.remove('selected');
-                    });
-                    
-                    btn.classList.add('selected');
-                    
-                    if (type === 'location') {
-                        selectedLocation = value;
-                    } else if (type === 'hunger') {
-                        selectedHunger = value;
-                    }
-                });
-            });
-
-            // 저장 버튼
-            document.getElementById('saveBtn').addEventListener('click', saveStatus);
-
-            // 모드 전환 버튼
-            document.getElementById('modeToggle').addEventListener('click', () => {
-                if (!isAdminMode) {
-                    document.getElementById('passwordModal').classList.add('active');
-                    document.getElementById('passwordInput').focus();
-                } else {
-                    isAdminMode = false;
-                    document.getElementById('adminPanel').classList.remove('active');
-                    showToast('🔒 관리자 모드 종료');
-                }
-            });
-
-            // 비밀번호 입력 엔터키
-            document.getElementById('passwordInput').addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    checkPassword();
-                }
             });
 
             // 알람 토글
             const notificationToggle = document.getElementById('notificationToggle');
             const notificationStatus = document.getElementById('notificationStatus');
             
-            // 초기 상태 설정
             if (notificationEnabled) {
                 notificationToggle.classList.add('on');
-                notificationToggle.setAttribute('aria-checked', 'true');
                 notificationStatus.textContent = '✅ 알림이 켜져있습니다';
             }
 
@@ -1138,101 +720,61 @@
                 
                 if (notificationEnabled) {
                     notificationToggle.classList.add('on');
-                    notificationToggle.setAttribute('aria-checked', 'true');
                     notificationStatus.textContent = '✅ 알림이 켜져있습니다';
-                    showToast('🔔 메시지 알림이 활성화되었습니다!');
-                    
-                    // Notification 권한 요청
+                    showToast('🔔 알림 활성화!');
                     if ('Notification' in window && Notification.permission === 'default') {
                         Notification.requestPermission();
                     }
                 } else {
                     notificationToggle.classList.remove('on');
-                    notificationToggle.setAttribute('aria-checked', 'false');
                     notificationStatus.textContent = '알림이 꺼져있습니다';
-                    showToast('🔕 메시지 알림이 비활성화되었습니다');
+                    showToast('🔕 알림 비활성화');
                 }
             });
         }
 
-        // 아버지 메시지 전송
-        async function sendDadMessage() {
-            const input = document.getElementById('dadInput');
-            const message = input.value.trim();
-            
-            if (!message) {
-                showToast('메시지를 입력해주세요');
+        async function saveFatherInfo() {
+            const message = document.getElementById('fatherMessageInput').value.trim();
+            const advice = document.getElementById('fatherAdviceInput').value.trim();
+            const memo = document.getElementById('fatherMemoInput').value.trim();
+
+            if (!fatherMood && !message && !advice && !memo) {
+                showToast('정보를 입력해주세요');
                 return;
             }
 
             try {
+                const body = {};
+                if (fatherMood) body.fatherMood = fatherMood;
+                if (message) body.fatherMessage = message;
+                if (advice) body.fatherAdvice = advice;
+                if (memo) body.fatherMemo = memo;
+
                 const response = await fetch(API_URL, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ dadMessage: message })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
                 });
 
                 const data = await response.json();
                 updateDisplay(data);
-                input.value = '';
-                showToast('✅ 메시지 전송 완료!');
                 
-                // 메시지 히스토리에 추가
-                addMessageToHistory('dad', message, new Date());
+                document.getElementById('fatherMessageInput').value = '';
+                document.getElementById('fatherAdviceInput').value = '';
+                document.getElementById('fatherMemoInput').value = '';
+                
+                showToast('✅ 정보 저장 완료!');
             } catch (error) {
-                console.error('메시지 전송 실패:', error);
-                showToast('❌ 전송 실패. 다시 시도해주세요.');
+                console.error('저장 실패:', error);
+                showToast('❌ 저장 실패');
             }
         }
 
-        // 메시지를 히스토리에 추가
-        function addMessageToHistory(sender, message, time) {
-            const history = document.getElementById('messageHistory');
-            
-            // 빈 상태 메시지 제거
-            const emptyMessage = history.querySelector('div[style*="text-align: center"]');
-            if (emptyMessage) {
-                emptyMessage.remove();
-            }
-
-            const messageItem = document.createElement('div');
-            messageItem.className = 'message-item';
-            
-            const senderName = sender === 'dad' ? '👨 아버지' : '👧 다영';
-            const senderClass = sender === 'dad' ? 'dad' : 'dayoung';
-
-            messageItem.innerHTML = `
-                <div class="message-sender ${senderClass}">${senderName}</div>
-                <div class="message-content">${escapeHtml(message)}</div>
-                <div class="message-time">${formatTime(time)} · ${formatTimeAgo(time)}</div>
-            `;
-
-            history.appendChild(messageItem);
-            
-            // 스크롤을 아래로
-            history.scrollTop = history.scrollHeight;
-        }
-
-        // HTML 특수문자 이스케이프
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        // 알림 표시
-        function sendNotification(title, options = {}) {
-            if (!notificationEnabled) return;
-            
-            if ('Notification' in window && Notification.permission === 'granted') {
-                new Notification(title, {
-                    icon: 'icon-192.png',
-                    tag: 'dayoung-status',
-                    ...options
-                });
-            }
+        function startPolling() {
+            pollingInterval = setInterval(() => {
+                console.log('📡 새 메시지 확인...');
+                fetchStatus();
+            }, 3 * 60 * 1000); // 3분
         }
 
         async function fetchStatus() {
@@ -1246,16 +788,15 @@
                 updateDisplay(data);
                 return data;
             } catch (error) {
-                console.error('상태 가져오기 실패:', error);
+                console.error('로드 실패:', error);
                 document.getElementById('loading').innerHTML = 
                     '<div style="font-size:3em; margin-bottom:15px;">😢</div>' +
-                    '<div class="loading-text">연결할 수 없어요</div>' +
-                    '<div style="margin-top:10px; color:#999; font-size:0.95em;">잠시 후 다시 시도해주세요</div>';
+                    '<div class="loading-text">연결할 수 없어요</div>';
             }
         }
 
         function updateDisplay(data) {
-            // 마지막 업데이트 시각 (더 최근 것 사용)
+            // 시간 업데이트
             const locationTime = data.locationUpdated ? new Date(data.locationUpdated) : null;
             const hungerTime = data.hungerUpdated ? new Date(data.hungerUpdated) : null;
             
@@ -1271,107 +812,127 @@
                 document.getElementById('lastUpdateAgo').textContent = formatTimeAgo(latestTime);
             }
 
-            // 위치 상태
+            // 위치
             const location = locationMap[data.location] || locationMap['going_home'];
             document.getElementById('locationEmoji').textContent = location.emoji;
             document.getElementById('locationText').textContent = location.text;
             document.getElementById('locationCard').className = 'status-card location-' + (data.location || 'going_home');
 
-            // 배고픔 상태
+            // 배고픔
             const hunger = hungerMap[data.hunger] || hungerMap['not_hungry'];
             document.getElementById('hungerEmoji').textContent = hunger.emoji;
             document.getElementById('hungerText').textContent = hunger.text;
             document.getElementById('hungerCard').className = 'status-card hunger-' + (data.hunger || 'not_hungry');
 
-            // 아버지 메시지 표시
-            const dadMessageText = document.getElementById('dadMessageText');
-            const dadMessageTime = document.getElementById('dadMessageTime');
-            const adminDadMessage = document.getElementById('adminDadMessage');
+            // 아버지 기분
+            updateFatherInfo(data);
+
+            // 메시지 히스토리
+            displayMessageHistory(data.messages);
+
+            // 새 메시지 알람 (Polling)
+            if (data.messages && data.messages.length > 0) {
+                const latestMsg = data.messages[data.messages.length - 1];
+                
+                if (latestMsg.sender === 'dad' && lastCheckTime < new Date(latestMsg.timestamp).getTime()) {
+                    sendNotification('💬 아버지가 정보를 업데이트했어요!', {
+                        body: latestMsg.content.substring(0, 50)
+                    });
+                    lastCheckTime = new Date(latestMsg.timestamp).getTime();
+                }
+            }
+        }
+
+        function updateFatherInfo(data) {
+            if (data.fatherMood) {
+                const mood = moodMap[data.fatherMood];
+                document.getElementById('fatherMoodDisplay').textContent = mood.emoji;
+                document.getElementById('fatherMoodText').textContent = mood.text;
+                
+                if (data.fatherMoodUpdated) {
+                    document.getElementById('fatherMoodTime').textContent = 
+                        formatTime(new Date(data.fatherMoodUpdated));
+                }
+            }
+        }
+
+        function displayMessageHistory(messages) {
+            const history = document.getElementById('messageHistory');
             
-            if (data.dadMessage && data.dadMessage.trim()) {
-                dadMessageText.textContent = data.dadMessage;
-                dadMessageText.classList.remove('dad-message-empty');
-                
-                if (data.dadMessageUpdated) {
-                    const msgTime = new Date(data.dadMessageUpdated);
-                    dadMessageTime.textContent = formatTime(msgTime) + ' · ' + formatTimeAgo(msgTime);
-                    dadMessageTime.style.display = 'block';
-                    
-                    // 메시지 히스토리에 아버지 메시지 추가
-                    addMessageToHistory('dad', data.dadMessage, msgTime);
-                    
-                    // 새로운 메시지면 알람 표시
-                    if (lastCheckTime < msgTime.getTime()) {
-                        sendNotification('💬 아버지가 메시지를 보냈어요!', {
-                            body: data.dadMessage.substring(0, 50) + (data.dadMessage.length > 50 ? '...' : '')
-                        });
-                        lastCheckTime = msgTime.getTime();
-                    }
-                }
-                
-                // 관리자 패널에도 표시
-                if (adminDadMessage) {
-                    adminDadMessage.textContent = data.dadMessage;
-                    adminDadMessage.classList.remove('admin-dad-message-empty');
-                }
-            } else {
-                dadMessageText.textContent = '아직 대화가 없어요';
-                dadMessageText.classList.add('dad-message-empty');
-                dadMessageTime.style.display = 'none';
-                
-                if (adminDadMessage) {
-                    adminDadMessage.textContent = '아직 대화가 없어요';
-                    adminDadMessage.classList.add('admin-dad-message-empty');
-                }
-            }
-
-            // 관리자 모드에서 현재 상태 선택 표시
-            if (isAdminMode) {
-                selectCurrentStatus(data.location, data.hunger);
-            }
-        }
-
-        function selectCurrentStatus(location, hunger) {
-            document.querySelectorAll('.option-btn[data-type="location"]').forEach(btn => {
-                btn.classList.toggle('selected', btn.dataset.value === location);
-            });
-            selectedLocation = location;
-
-            document.querySelectorAll('.option-btn[data-type="hunger"]').forEach(btn => {
-                btn.classList.toggle('selected', btn.dataset.value === hunger);
-            });
-            selectedHunger = hunger;
-        }
-
-        async function saveStatus() {
-            if (!selectedLocation && !selectedHunger) {
-                showToast('상태를 선택해주세요');
+            if (!messages || messages.length === 0) {
+                history.innerHTML = '<div style="text-align: center; color: #B2BEC3; padding: 20px 10px; font-size: 0.95em;">아직 메시지가 없어요</div>';
                 return;
             }
 
-            try {
-                const body = {};
-                if (selectedLocation) body.location = selectedLocation;
-                if (selectedHunger) body.hunger = selectedHunger;
+            const typeText = {
+                'message': '💬',
+                'advice': '❤️',
+                'memo': '📝'
+            };
 
+            history.innerHTML = messages.map(msg => `
+                <div class="message-item">
+                    <div class="message-header">
+                        <div class="message-sender-info">
+                            <span class="message-type-badge${msg.type === 'advice' ? ' advice' : msg.type === 'memo' ? ' memo' : ''}">
+                                ${typeText[msg.type] || '💬'}
+                            </span>
+                            <span class="message-sender${msg.sender === 'dad' ? ' dad' : ' dayoung'}">
+                                ${msg.sender === 'dad' ? '👨 아버지' : '👧 다영'}
+                            </span>
+                        </div>
+                        <div class="message-actions">
+                            ${!msg.read ? `<button class="msg-btn read" onclick="markAsRead('${msg.id}')">✓</button>` : ''}
+                            <button class="msg-btn delete" onclick="deleteMessage('${msg.id}')">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="message-content">${escapeHtml(msg.content)}</div>
+                    <div class="message-time">${formatTime(new Date(msg.timestamp))} · ${formatTimeAgo(new Date(msg.timestamp))}</div>
+                </div>
+            `).join('');
+            
+            history.scrollTop = history.scrollHeight;
+        }
+
+        async function deleteMessage(messageId) {
+            try {
                 const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(body)
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ messageId })
                 });
 
                 const data = await response.json();
                 updateDisplay(data);
-                showToast('✅ 저장 완료!');
+                showToast('🗑️ 삭제 완료');
             } catch (error) {
-                console.error('저장 실패:', error);
-                showToast('❌ 저장 실패. 다시 시도해주세요.');
+                console.error('삭제 실패:', error);
+                showToast('❌ 삭제 실패');
             }
         }
 
-        // 시각 포맷 (오후 3:45)
+        async function markAsRead(messageId) {
+            showToast('✅ 읽음 표시 완료');
+        }
+
+        function sendNotification(title, options = {}) {
+            if (!notificationEnabled) return;
+            
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification(title, {
+                    icon: 'icon-192.png',
+                    tag: 'dayoung-status',
+                    ...options
+                });
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
         function formatTime(date) {
             return date.toLocaleTimeString('ko-KR', {
                 hour: 'numeric',
@@ -1380,7 +941,6 @@
             });
         }
 
-        // 날짜 포맷 (2025년 1월 31일)
         function formatDate(date) {
             return date.toLocaleDateString('ko-KR', {
                 year: 'numeric',
@@ -1389,7 +949,6 @@
             });
         }
 
-        // ~분 전 포맷
         function formatTimeAgo(date) {
             const now = new Date();
             const diff = now - date;
@@ -1403,25 +962,6 @@
             if (hours < 24) return hours + '시간 전';
             if (days === 1) return '어제';
             return days + '일 전';
-        }
-
-        function checkPassword() {
-            const input = document.getElementById('passwordInput');
-            if (input.value === ADMIN_PASSWORD) {
-                isAdminMode = true;
-                document.getElementById('adminPanel').classList.add('active');
-                closeModal();
-                showToast('🔓 관리자 모드');
-                fetchStatus();
-            } else {
-                showToast('❌ 비밀번호 오류');
-                input.value = '';
-            }
-        }
-
-        function closeModal() {
-            document.getElementById('passwordModal').classList.remove('active');
-            document.getElementById('passwordInput').value = '';
         }
 
         function showToast(message) {
