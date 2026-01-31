@@ -1,84 +1,97 @@
-const CACHE_NAME = 'dayoung-status-v2';
+// Service Worker - Push 알림 수신
+
+const CACHE_NAME = 'dayoung-status-v3';
 const urlsToCache = [
   './',
   './index.html',
-  './manifest.json',
   './icon-192.png',
   './icon-512.png'
 ];
 
-// 설치 - 즉시 활성화
+// 설치
 self.addEventListener('install', event => {
-  console.log('[SW] 설치 중...');
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('[SW] 캐시 저장 중...');
-        return cache.addAll(urlsToCache);
-      })
-      .then(() => {
-        console.log('[SW] 캐시 저장 완료');
-        return self.skipWaiting(); // 즉시 활성화
-      })
-      .catch(err => {
-        console.error('[SW] 캐시 설치 오류:', err);
-      })
+      .then(cache => cache.addAll(urlsToCache))
+      .then(() => self.skipWaiting())
   );
 });
 
-// 활성화 - 즉시 클라이언트 제어
+// 활성화
 self.addEventListener('activate', event => {
-  console.log('[SW] 활성화 중...');
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames.map(cacheName => {
           if (cacheName !== CACHE_NAME) {
-            console.log('[SW] 오래된 캐시 삭제:', cacheName);
             return caches.delete(cacheName);
           }
         })
       );
-    })
-    .then(() => {
-      console.log('[SW] 활성화 완료');
-      return self.clients.claim(); // 즉시 제어권 획득
-    })
+    }).then(() => self.clients.claim())
   );
 });
 
-// 요청 처리
+// 네트워크 요청
 self.addEventListener('fetch', event => {
-  // API 요청은 항상 네트워크에서 가져오기 (Network First)
-  if (event.request.url.includes('workers.dev')) {
-    event.respondWith(
-      fetch(event.request)
-        .then(response => {
-          console.log('[SW] API 응답:', event.request.url);
-          return response;
-        })
-        .catch(err => {
-          console.log('[SW] API 오류, 캐시 시도:', err);
-          return caches.match(event.request);
-        })
-    );
-    return;
+  event.respondWith(
+    fetch(event.request)
+      .catch(() => caches.match(event.request))
+  );
+});
+
+// 🔔 Push 알림 수신 - 핵심!
+self.addEventListener('push', event => {
+  console.log('Push 메시지 수신!', event);
+
+  let data = { title: '다영이 상태', body: '새로운 알림이 있어요' };
+  
+  if (event.data) {
+    try {
+      data = event.data.json();
+    } catch (e) {
+      data.body = event.data.text();
+    }
   }
 
-  // 정적 파일은 캐시 우선 (Cache First)
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        if (response) {
-          console.log('[SW] 캐시에서 제공:', event.request.url);
-          return response;
+  const options = {
+    body: data.body,
+    icon: './icon-192.png',
+    badge: './icon-192.png',
+    vibrate: [200, 100, 200],
+    tag: 'dayoung-status',
+    renotify: true,
+    requireInteraction: false,
+    actions: [
+      { action: 'open', title: '열기' },
+      { action: 'close', title: '닫기' }
+    ]
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(data.title, options)
+  );
+});
+
+// 알림 클릭
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+
+  if (event.action === 'close') return;
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true })
+      .then(clientList => {
+        // 이미 열린 창이 있으면 포커스
+        for (const client of clientList) {
+          if (client.url.includes('dayoung') && 'focus' in client) {
+            return client.focus();
+          }
         }
-        console.log('[SW] 네트워크에서 가져옴:', event.request.url);
-        return fetch(event.request);
-      })
-      .catch(err => {
-        console.log('[SW] 오류 발생, index.html 제공:', err);
-        return caches.match('./index.html');
+        // 없으면 새 창 열기
+        if (clients.openWindow) {
+          return clients.openWindow('./');
+        }
       })
   );
 });
