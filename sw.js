@@ -1,50 +1,61 @@
 const CACHE_NAME = 'dayoung-status-v1';
 const urlsToCache = [
-    '/',
-    '/index.html',
-    '/manifest.json',
-    '/icon-192.png',
-    '/icon-512.png'
+  '/',
+  '/index.html',
+  '/manifest.json',
+  '/icon-192.png',
+  '/icon-512.png'
 ];
 
-// 설치 시 캐시
-self.addEventListener('install', (event) => {
-    event.waitUntil(
-        caches.open(CACHE_NAME)
-            .then((cache) => {
-                console.log('캐시 열기 성공');
-                return cache.addAll(urlsToCache);
-            })
-    );
+// 설치
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        return cache.addAll(urlsToCache);
+      })
+      .catch(err => {
+        console.log('Cache install error:', err);
+      })
+  );
 });
 
-// 요청 시 캐시 우선, 없으면 네트워크
-self.addEventListener('fetch', (event) => {
+// 활성화
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheName !== CACHE_NAME) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
+});
+
+// 요청 처리
+self.addEventListener('fetch', event => {
+  // API 요청은 항상 네트워크에서 가져오기
+  if (event.request.url.includes('workers.dev')) {
     event.respondWith(
-        caches.match(event.request)
-            .then((response) => {
-                // 캐시에 있으면 캐시 반환
-                if (response) {
-                    return response;
-                }
-                // 없으면 네트워크 요청
-                return fetch(event.request);
-            })
-    );
-});
-
-// 새 버전 설치 시 이전 캐시 삭제
-self.addEventListener('activate', (event) => {
-    event.waitUntil(
-        caches.keys().then((cacheNames) => {
-            return Promise.all(
-                cacheNames.map((cacheName) => {
-                    if (cacheName !== CACHE_NAME) {
-                        console.log('이전 캐시 삭제:', cacheName);
-                        return caches.delete(cacheName);
-                    }
-                })
-            );
+      fetch(event.request)
+        .catch(() => {
+          return caches.match(event.request);
         })
     );
+    return;
+  }
+
+  // 그 외 요청은 캐시 우선
+  event.respondWith(
+    caches.match(event.request)
+      .then(response => {
+        return response || fetch(event.request);
+      })
+      .catch(() => {
+        return caches.match('/index.html');
+      })
+  );
 });

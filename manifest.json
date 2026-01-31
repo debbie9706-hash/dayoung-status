@@ -1,24 +1,47 @@
 {
-    "name": "다영이 상태 알림",
-    "short_name": "다영이 상태",
-    "description": "다영이의 현재 상태를 확인할 수 있는 앱",
-    "start_url": "/",
-    "display": "standalone",
-    "background_color": "#667eea",
-    "theme_color": "#667eea",
-    "orientation": "portrait",
-    "icons": [
+  "name": "다영이 상태 알림",
+  "short_name": "다영이 상태",
+  "description": "아버지와 다영이가 실시간으로 소통하는 상태 알림 앱",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#5B8A72",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "categories": ["productivity", "lifestyle"],
+  "shortcuts": [
+    {
+      "name": "상태 확인",
+      "short_name": "상태",
+      "description": "다영이의 상태를 빠르게 확인합니다",
+      "url": "/index.html",
+      "icons": [
         {
-            "src": "icon-192.png",
-            "sizes": "192x192",
-            "type": "image/png",
-            "purpose": "any maskable"
-        },
-        {
-            "src": "icon-512.png",
-            "sizes": "512x512",
-            "type": "image/png",
-            "purpose": "any maskable"
+          "src": "icon-192.png",
+          "sizes": "192x192"
         }
-    ]
+      ]
+    }
+  ]
 }
